@@ -14,6 +14,7 @@ import {
 import { connect } from 'react-redux'
 import AddTile from './AddTile';
 import Sentence from './Sentence';
+import { updateSentence } from './actions'
 
 class GameView extends Component {
   constructor(props) {
@@ -22,7 +23,8 @@ class GameView extends Component {
 
     this.state = {
       pan: new Animated.ValueXY(),
-      scale: new Animated.Value(1)
+      scale: new Animated.Value(1),
+      dropZoneValues: null
     };
   }
 
@@ -62,34 +64,32 @@ class GameView extends Component {
     });
   }
 
+  setDropZoneValues(event){
+    this.setState({
+        dropZoneValues : event.nativeEvent.layout,
+      });
+  }
+
+  reviseSentence = (sentenceWordID, tileWord) => {
+    this.props.updateSentence( { sentenceWordID, tileWord } );
+  }
+
   render() {
-    // Destructure the value of pan from the state
-    let { pan, scale } = this.state;
-
-    // Calculate the x and y transform from the pan value
-    let [translateX, translateY] = [pan.x, pan.y];
-
-    let rotate = '0deg';
-
-    // Calculate the transform property and set it as a value for our style which we add below to the Animated.View component
-    let tile = {
-      flex: 0,
-      borderRadius: 4,
-      flexDirection: 'row',
-      justifyContent: 'center',
-      flexWrap: 'wrap',
-      transform: [ {translateX}, {translateY}, {rotate}, {scale} ]
-    };
 
     return (
       <View>
         <View style={styles.gameContainer}>
-          <View style={styles.sentenceContainer}>
+          <View style={styles.sentenceContainer} onLayout={this.setDropZoneValues.bind(this)}>
             { this.props.sentence.map( (word, idx) => {
-                return <Sentence key={idx} sentenceProps={word}/>
+                return <Sentence
+                          key={ idx }
+                          title={ word }
+                          id={ idx }
+                          callback={ this.reviseSentence }
+                        />
             })}
           </View>
-          <View style={styles.tileContainer}>
+          <View style={ styles.tileContainer }>
             { this.props.tiles.map( (tile, idx) => {
                 return <AddTile key={idx} tileProps={tile}/>
             })}
@@ -112,18 +112,19 @@ class GameView extends Component {
 
 const styles = StyleSheet.create({
   gameContainer: {
+   marginTop: 0,
+   marginLeft: 0,
+   marginRight: 0,
+   marginBottom: 0,
    flex: 0,
-   borderRadius: 4,
-   borderWidth: 1,
-   borderColor: 'black',
    flexDirection: 'column',
-   marginTop: '30%',
-   marginLeft: '10%',
-   marginRight: '10%',
    justifyContent: 'flex-start',
    flexWrap: 'wrap',
   },
   sentenceContainer: {
+   marginTop: 100,
+   marginLeft: 25,
+   marginRight: 25,
    borderRadius: 4,
    borderWidth: 1,
    borderColor: 'red',
@@ -133,10 +134,12 @@ const styles = StyleSheet.create({
    flexWrap: 'wrap',
   },
   tileContainer: {
-   marginTop: 50,
+   marginTop: 200,
+   marginLeft: 25,
+   marginRight: 25,
    borderRadius: 4,
    borderWidth: 1,
-   borderColor: 'yellow',
+   borderColor: 'blue',
    flex: 0,
    flexDirection: 'row',
    justifyContent: 'center',
@@ -148,17 +151,17 @@ const mapStateToProps = (state) => {
   return { ...state };
 }
 
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     onAdd: (newCard) => {
-//       dispatch(addCard(newCard));
-//     }
-//   }
-// }
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updateSentence: (changeIDs) => {
+      dispatch(updateSentence(changeIDs));
+    }
+  }
+}
 
 GameView = connect(
-  mapStateToProps
-  // mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(GameView);
 
 export default GameView;

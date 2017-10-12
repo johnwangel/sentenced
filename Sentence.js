@@ -16,20 +16,52 @@ import {
 class AddSentence extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      showDraggable   : true,
+      dropZoneValues  : null,
+      pan             : new Animated.ValueXY()
+    };
+
+    this.panResponder = PanResponder.create({
+      onStartShouldSetPanResponder    : () => true
+    });
   }
 
   _onPressButton() {
     Alert.alert('You tapped the button!')
   }
 
+  setDropZoneValues(event){
+    this.setState({
+        dropZoneValues : event.nativeEvent.layout,
+      });
+  }
+
   render() {
+    let updateComponent = true;
+    if (this.props.moveCoordinates){
+        var dz = this.state.dropZoneValues;
+        let aword = this.props.title;
+        let xd = dz.x + 25;
+        let xd2 = xd + dz.width;
+        let yd = dz.y + 150;
+        let yd2 = yd + dz.height;
+        let xm = this.props.moveCoordinates.moveX;
+        let ym = this.props.moveCoordinates.moveY;
+        let tileWord = this.props.moveCoordinates.title;
+        //console.log({ aword, xd, xd2, xm, yd, yd2, ym, tileWord });
+        if ( ym > yd && ym < yd2 && xm > xd && xm < xd2 ) this.props.callback( this.props.id, tileWord );
+    }
+
     return (
-
-            <Button id={this.props.key}
-              onPress={this._onPressButton}
-              title={this.props.sentenceProps}
+      <View style={ styles.sentence }onLayout={this.setDropZoneValues.bind(this)}>
+            <Button
+              id={ this.props.key }
+              onPress={ this._onPressButton }
+              title={ this.props.title }
             />
-
+      </View>
     );
   }
 }
@@ -37,8 +69,7 @@ class AddSentence extends Component {
 const styles = StyleSheet.create({
   sentence: {
       flex: 0,
-      borderRadius: 4,
-      flexDirection: 'row',
+      flexDirection: 'column',
       justifyContent: 'center',
       flexWrap: 'wrap',
   },

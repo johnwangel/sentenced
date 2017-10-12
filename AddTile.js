@@ -12,6 +12,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { tileDropCoordinates } from './actions'
 
 class AddTile extends Component {
   constructor(props) {
@@ -20,6 +21,9 @@ class AddTile extends Component {
     this.state = {
       pan: new Animated.ValueXY(),
       scale: new Animated.Value(1),
+      showDraggable   : true,
+      dropZoneValues  : null,
+      moveValues: null,
     };
   }
 
@@ -30,6 +34,7 @@ class AddTile extends Component {
   componentWillMount() {
 
     this._panResponder = PanResponder.create({
+      onStartShouldSetPanResponder    : () => true,
       onMoveShouldSetResponderCapture: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
 
@@ -48,13 +53,13 @@ class AddTile extends Component {
         null, {dx: this.state.pan.x, dy: this.state.pan.y},
       ]),
 
-      onPanResponderRelease: (e, {vx, vy}) => {
+      onPanResponderRelease: ({ identifier, target, pageX, pageY }, {moveX, moveY, x0, y0, dx, dy, vx, vy}) => {
         // Flatten the offset to avoid erratic behavior
-        console.log("Release vx and vy: ", vx, ' ', vy);
         this.state.pan.flattenOffset();
+        this.props.movedTile( { title: this.props.tileProps, moveX, moveY } );
         Animated.spring(
           this.state.scale,
-          { toValue: 1, friction: 3 }
+          { toValue: 0, friction: 3 }
         ).start();
       }
     });
@@ -66,11 +71,10 @@ class AddTile extends Component {
 
     // Calculate the x and y transform from the pan value
     let [translateX, translateY] = [pan.x, pan.y];
-
     let rotate = '0deg';
 
     // Calculate the transform property and set it as a value for our style which we add below to the Animated.View component
-    let tile = {
+    let tileStyle = {
       flex: 0,
       borderRadius: 4,
       flexDirection: 'row',
@@ -80,34 +84,32 @@ class AddTile extends Component {
     };
 
     return (
-          <Animated.View style={ styles.tile } {...this._panResponder.panHandlers}>
-            <Button id={this.props.key} onPress={this._onPressButton} title={this.props.tileProps}/>
+          <Animated.View style={ tileStyle } { ...this._panResponder.panHandlers }>
+            <Button
+              id={this.props.key}
+              onPress={this._onPressButton}
+              title={this.props.tileProps}
+            />
           </Animated.View>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  tile: {
-
-  },
-});
-
 const mapStateToProps = (state) => {
   return { ...state };
 }
 
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     onAdd: (newCard) => {
-//       dispatch(addCard(newCard));
-//     }
-//   }
-// }
+const mapDispatchToProps = (dispatch) => {
+  return {
+    movedTile: (dropCoordiates) => {
+      dispatch(tileDropCoordinates(dropCoordiates));
+    }
+  }
+}
 
 AddTile = connect(
-  mapStateToProps
-  // mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(AddTile);
 
 export default AddTile;
