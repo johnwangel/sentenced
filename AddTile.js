@@ -24,12 +24,20 @@ class AddTile extends Component {
       showDraggable   : true,
       dropZoneValues  : null,
       moveValues: null,
+      showView: true,
     };
   }
 
   _onPressButton() {
     Alert.alert('You tapped the button!')
   }
+
+  removeButton() {
+    this.setState({
+        showView: false,
+    });
+  }
+
 
   componentWillMount() {
 
@@ -57,10 +65,11 @@ class AddTile extends Component {
         // Flatten the offset to avoid erratic behavior
         this.state.pan.flattenOffset();
         this.props.movedTile( { title: this.props.tileProps, moveX, moveY } );
-        Animated.spring(
-          this.state.scale,
-          { toValue: 0, friction: 3 }
-        ).start();
+        this.removeButton();
+        // Animated.spring(
+        //   this.state.scale,
+        //   { toValue: 1, friction: 2 }
+        // ).start();
       }
     });
   }
@@ -84,13 +93,16 @@ class AddTile extends Component {
     };
 
     return (
-          <Animated.View style={ tileStyle } { ...this._panResponder.panHandlers }>
-            <Button
-              id={this.props.key}
-              onPress={this._onPressButton}
-              title={this.props.tileProps}
-            />
+          <Animated.View style={ tileStyle } { ...this._panResponder.panHandlers } >
+            {this.state.showView && (
+              <Button
+                id={this.props.key}
+                onPress={this._onPressButton}
+                title={this.props.tileProps}
+              />
+            )}
           </Animated.View>
+
     );
   }
 }

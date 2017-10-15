@@ -70,8 +70,8 @@ class GameView extends Component {
       });
   }
 
-  reviseSentence = (sentenceWordID, tileWord) => {
-    this.props.updateSentence( { sentenceWordID, tileWord } );
+  reviseSentence = (sentenceWordID, tileWord, newWord) => {
+    this.props.updateSentence( { sentenceWordID, tileWord, newWord } );
   }
 
   render() {

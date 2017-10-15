@@ -14,7 +14,7 @@ const sentencedReducers = (state = { sentence, tiles }, action) => {
     case MOVED_TILES:
       return movedTile(state, action)
     case UPDATE_SENTENCE:
-      return updateSentence(state, action);
+      return updateSent(state, action)
     default:
       return state;
   }
@@ -31,13 +31,12 @@ function movedTile(state, action){
   return Object.assign({}, state, newState, {moveCoordinates: action.coordinates})
 }
 
-function updateSentence(state, action){
-  console.log('STATE FROM UPDATE SENTENCE', state)
-  console.log('ACTION ', action)
-  let sentence = state.sentence;
-  let tiles = state.tiles;
-  sentence[action.wordIDs.sentenceWordID] = action.wordIDs.tileWord;
-  return { sentence, tiles };
+function updateSent(state, action){
+    let tiles = state.tiles;
+    let sentence = state.sentence;
+    sentence[action.wordIDs.sentenceWordID] = action.wordIDs.tileWord;
+    tiles.push(action.wordIDs.newWord);
+    return { tiles, sentence };
 }
 
 export default sentencedReducers;

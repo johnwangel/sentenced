@@ -12,6 +12,7 @@ import {
   Text,
   View,
 } from 'react-native';
+const RANDOM = 'http://localhost:3000/api/random';
 
 class AddSentence extends Component {
   constructor(props) {
@@ -51,11 +52,19 @@ class AddSentence extends Component {
         let ym = this.props.moveCoordinates.moveY;
         let tileWord = this.props.moveCoordinates.title;
         //console.log({ aword, xd, xd2, xm, yd, yd2, ym, tileWord });
-        if ( ym > yd && ym < yd2 && xm > xd && xm < xd2 ) this.props.callback( this.props.id, tileWord );
+        if ( ym > yd && ym < yd2 && xm > xd && xm < xd2 ) {
+          let newWord = '';
+          fetch(RANDOM)
+          .then((response) => response.json())
+          .then((word) => {
+            newWord = word.word;
+            this.props.callback( this.props.id, tileWord, newWord )
+          })
+        };
     }
 
     return (
-      <View style={ styles.sentence }onLayout={this.setDropZoneValues.bind(this)}>
+      <View style={ styles.sentence } onLayout={this.setDropZoneValues.bind(this)}>
             <Button
               id={ this.props.key }
               onPress={ this._onPressButton }
