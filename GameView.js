@@ -15,12 +15,21 @@ import {
 import { connect } from 'react-redux'
 import AddTile from './AddTile';
 import Sentence from './Sentence';
-import { updateSentence } from './actions'
+import { addTiles, updateSentence } from './actions'
+
+const INIT_TILES = 'http://localhost:3000/api/init_tiles';
 
 class GameView extends Component {
   constructor(props) {
     super(props);
-    console.log(props);
+
+    for (var i = 0; i < 3; i++) {
+      fetch(INIT_TILES)
+      .then(res => res.json())
+      .then(tile => {
+        this.initializeTiles(tile);
+      });
+    }
 
     this.state = {
       pan: new Animated.ValueXY(),
@@ -73,6 +82,10 @@ class GameView extends Component {
 
   reviseSentence = (sentenceWordID, tileWord, newWord) => {
     this.props.updateSentence( { sentenceWordID, tileWord, newWord } );
+  }
+
+  initializeTiles = (tile) => {
+    this.props.initTiles( { tile } )
   }
 
   render() {
@@ -170,7 +183,10 @@ const mapDispatchToProps = (dispatch) => {
   return {
     updateSentence: (changeIDs) => {
       dispatch(updateSentence(changeIDs));
-    }
+    },
+    initTiles: ( tile ) => {
+      dispatch(addTiles(tile));
+    },
   }
 }
 
