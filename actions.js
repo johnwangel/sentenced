@@ -1,11 +1,23 @@
 import React from 'react'
 import { connect } from 'react-redux'
-export const ADD_TILES = 'ADD_TILES'
+export const ADD_TILE = 'ADD_TILE'
 export const MOVED_TILES = 'MOVED_TILES'
 export const UPDATE_SENTENCE = 'UPDATE_SENTENCE'
 
-export function addTiles( newTiles ) {
-  return { type: ADD_TILES, tiles: newTiles }
+const RANDOM = 'http://localhost:3000/api/random';
+
+export const addTiles = () => {
+  console.log("THIS IS RUNNING!!!")
+  return dispatch => {
+    fetch(RANDOM)
+    .then(res => res.json())
+    .then(tile => {
+      dispatch({
+        type: ADD_TILE,
+        tile
+      });
+    });
+  }
 }
 
 export function tileDropCoordinates( coordinates ) {

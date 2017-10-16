@@ -1,16 +1,17 @@
 import {
-  ADD_TILES,
+  ADD_TILE,
   MOVED_TILES,
   UPDATE_SENTENCE,
 } from './actions';
 
 let sentence = ['The', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog', '.']
-let tiles = ['cat', 'dog', 'eat' ]
+let tiles = ['eat', 'cat', 'me'];
 
 const sentencedReducers = (state = { sentence, tiles }, action) => {
+  console.log(action.type);
   switch (action.type) {
-    case ADD_TILES:
-      return loadTiles(state, action)
+    case ADD_TILE:
+      return loadTile(state, action)
     case MOVED_TILES:
       return movedTile(state, action)
     case UPDATE_SENTENCE:
@@ -20,10 +21,11 @@ const sentencedReducers = (state = { sentence, tiles }, action) => {
   }
 }
 
-function loadTiles(state, action){
-  let myTiles = { tiles: action.tiles }
-  console.log("These are my tiles", myTiles);
-  return myTiles;
+function loadTile(state, action){
+  let newState = state;
+  newState.tiles.push(action.tile.word);
+  console.log("NEW STATE", newState);
+  return Object.assign({}, state, newState);
 }
 
 function movedTile(state, action){
