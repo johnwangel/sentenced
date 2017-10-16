@@ -6,6 +6,7 @@ import {
   Button,
   Image,
   PanResponder,
+  ScrollView,
   SectionList,
   StyleSheet,
   Text,
@@ -94,18 +95,26 @@ class GameView extends Component {
                 return <AddTile key={idx} tileProps={tile}/>
             })}
           </View>
+          <ScrollView horizontal={true} contentContainerStyle={styles.contentContainer}>
+            <Button color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+            <Button color="white" color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+            <Button color="white" title="Testing"/>
+          </ScrollView>
        </View>
       </View>
-        // <SectionList
-        //   sections={[
-        //     {title: 'D', data: ['Devin']},
-        //     {title: 'J', data: ['Jackson', 'James', 'Jillian', 'Jimmy', 'Joel', 'John', 'Julie']},
-        //   ]}
-        //   renderItem={({item}) => <Text style={styles.item}>{item}</Text>}
-        //   renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-        // />
-
-      // </View>
     );
   }
 }
@@ -122,10 +131,11 @@ const styles = StyleSheet.create({
    flexWrap: 'wrap',
   },
   sentenceContainer: {
+   backgroundColor: 'red',
    marginTop: 100,
    marginLeft: 25,
    marginRight: 25,
-   borderRadius: 4,
+   borderRadius: 10,
    borderWidth: 1,
    borderColor: 'red',
    flex: 0,
@@ -134,10 +144,10 @@ const styles = StyleSheet.create({
    flexWrap: 'wrap',
   },
   tileContainer: {
+   backgroundColor: 'blue',
    marginTop: 200,
-   marginLeft: 25,
-   marginRight: 25,
-   borderRadius: 4,
+   marginTop: 200,
+   borderRadius: 10,
    borderWidth: 1,
    borderColor: 'blue',
    flex: 0,
@@ -145,6 +155,11 @@ const styles = StyleSheet.create({
    justifyContent: 'center',
    flexWrap: 'wrap',
   },
+  contentContainer: {
+    marginTop: 225,
+    backgroundColor: 'green',
+    paddingVertical: 20,
+  }
 });
 
 const mapStateToProps = (state) => {

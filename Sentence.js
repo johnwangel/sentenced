@@ -69,6 +69,7 @@ class AddSentence extends Component {
               id={ this.props.key }
               onPress={ this._onPressButton }
               title={ this.props.title }
+              color="white"
             />
       </View>
     );

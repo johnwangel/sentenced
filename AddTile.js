@@ -99,6 +99,7 @@ class AddTile extends Component {
                 id={this.props.key}
                 onPress={this._onPressButton}
                 title={this.props.tileProps}
+                color="white"
               />
             )}
           </Animated.View>
