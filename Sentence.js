@@ -57,7 +57,8 @@ class AddSentence extends Component {
           fetch(RANDOM)
           .then((response) => response.json())
           .then((word) => {
-            newWord = word.word;
+            newWord = word;
+            console.log("NEW WORD", newWord)
             this.props.callback( this.props.id, tileWord, newWord )
           })
         };

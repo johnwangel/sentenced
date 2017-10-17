@@ -17,14 +17,14 @@ import AddTile from './AddTile';
 import Sentence from './Sentence';
 import { addTiles, updateSentence } from './actions'
 
-const INIT_TILES = 'http://localhost:3000/api/init_tiles';
+const RANDOM = 'http://localhost:3000/api/random';
 
 class GameView extends Component {
   constructor(props) {
     super(props);
 
     for (var i = 0; i < 3; i++) {
-      fetch(INIT_TILES)
+      fetch(RANDOM)
       .then(res => res.json())
       .then(tile => {
         this.initializeTiles(tile);
@@ -89,6 +89,7 @@ class GameView extends Component {
   }
 
   render() {
+    console.log("PROPS FROM GAME VIEW", this.props.tiles);
 
     return (
       <View>
@@ -105,7 +106,7 @@ class GameView extends Component {
           </View>
           <View style={ styles.tileContainer }>
             { this.props.tiles.map( (tile, idx) => {
-                return <AddTile key={idx} tileProps={tile}/>
+                return <AddTile key={idx} tileProps={ tile }/>
             })}
           </View>
           <ScrollView horizontal={true} contentContainerStyle={styles.contentContainer}>

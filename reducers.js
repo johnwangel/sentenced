@@ -10,7 +10,6 @@ let tiles = [];
 const sentencedReducers = (state = { sentence, tiles }, action) => {
   switch (action.type) {
     case ADD_TILE:
-      console.log("ACTION IN REDUCER", action)
       return loadTile(state, action)
     case MOVED_TILES:
       return movedTile(state, action)
@@ -22,12 +21,13 @@ const sentencedReducers = (state = { sentence, tiles }, action) => {
 }
 
 function loadTile(state, action){
-  console.log('ACTION IN LOAD TILE', action);
-  let tiles = state.tiles;
-  let sentence = state.sentence;
-  tiles.push(action.tile.tile.word);
-  console.log("NEW STATE", tiles);
-  return { tiles, sentence };
+  console.log("STATE FROM LOAD TILE ", action)
+  return { sentence: [...state.sentence],
+    tiles : [
+      ...state.tiles,
+      action.tile.tile
+    ]
+  }
 }
 
 function movedTile(state, action){
@@ -36,11 +36,25 @@ function movedTile(state, action){
 }
 
 function updateSent(state, action){
-    let tiles = state.tiles;
-    let sentence = state.sentence;
-    sentence[action.wordIDs.sentenceWordID] = action.wordIDs.tileWord;
-    tiles.push(action.wordIDs.newWord);
-    return { tiles, sentence };
+  console.log("STATE FROM UPDATE SENTENCE", state)
+  let newSent = state.sentence;
+  newSent[action.wordIDs.sentenceWordID] = action.wordIDs.tileWord;
+  let newTiles = state.tiles;
+  newTiles.push(action.wordIDs.newWord);
+  console.log("NEW TILES ", newTiles);
+  return {
+    sentence: [
+      ...newSent
+    ],
+    tiles : [
+      ...newTiles
+    ]
+  }
+    // let tiles = state.tiles;
+    // let sentence = state.sentence;
+    // sentence[action.wordIDs.sentenceWordID] = action.wordIDs.tileWord;
+    // tiles.push(action.wordIDs.newWord);
+    // return { tiles, sentence };
 }
 
 export default sentencedReducers;

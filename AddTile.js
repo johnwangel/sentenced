@@ -16,6 +16,7 @@ import { tileDropCoordinates } from './actions'
 
 class AddTile extends Component {
   constructor(props) {
+
     super(props);
 
     this.state = {
@@ -29,7 +30,13 @@ class AddTile extends Component {
   }
 
   _onPressButton() {
-    Alert.alert('You tapped the button!')
+    let o = this.props.tileProps;
+    let str = '';
+    for(var prop in o){
+      str = str + `${prop}: ${o[prop]}` + '\n';
+    }
+
+    Alert.alert(str)
   }
 
   removeButton() {
@@ -37,7 +44,6 @@ class AddTile extends Component {
         showView: false,
     });
   }
-
 
   componentWillMount() {
 
@@ -64,7 +70,7 @@ class AddTile extends Component {
       onPanResponderRelease: ({ identifier, target, pageX, pageY }, {moveX, moveY, x0, y0, dx, dy, vx, vy}) => {
         // Flatten the offset to avoid erratic behavior
         this.state.pan.flattenOffset();
-        this.props.movedTile( { title: this.props.tileProps, moveX, moveY } );
+        this.props.movedTile( { title: this.props.tileProps.word, moveX, moveY } );
         this.removeButton();
         // Animated.spring(
         //   this.state.scale,
@@ -75,6 +81,7 @@ class AddTile extends Component {
   }
 
   render() {
+    console.log("PROPS FROM ADD TILE", this.props.tileProps)
     // Destructure the value of pan from the state
     let { pan, scale } = this.state;
 
@@ -97,8 +104,8 @@ class AddTile extends Component {
             {this.state.showView && (
               <Button
                 id={this.props.key}
-                onPress={this._onPressButton}
-                title={this.props.tileProps}
+                onPress={this._onPressButton.bind(this)}
+                title={this.props.tileProps.word}
                 color="white"
               />
             )}
@@ -126,3 +133,5 @@ AddTile = connect(
 )(AddTile);
 
 export default AddTile;
+
+

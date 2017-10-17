@@ -8,7 +8,7 @@ export const UPDATE_SENTENCE = 'UPDATE_SENTENCE'
 const RANDOM = 'http://localhost:3000/api/random';
 
 export function addTiles( tile ){
-  return { type: ADD_TILE, tile: tile }
+  return { type: ADD_TILE, tile }
 }
 
 export function tileDropCoordinates( coordinates ) {
