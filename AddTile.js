@@ -12,7 +12,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import { tileDropCoordinates } from './actions'
 
 class AddTile extends Component {
   constructor(props) {
@@ -24,8 +23,7 @@ class AddTile extends Component {
       scale: new Animated.Value(1),
       showDraggable   : true,
       dropZoneValues  : null,
-      moveValues: null,
-      showView: true,
+      initValSet: null,
     };
   }
 
@@ -39,10 +37,13 @@ class AddTile extends Component {
     Alert.alert(str)
   }
 
-  removeButton() {
-    this.setState({
-        showView: false,
-    });
+  setDropZoneValues(event){
+    // console.log("INIT VAL", event.nativeEvent.layout);
+    if (this.state.initValSet === null) {
+      this.setState({
+        initValSet : event.nativeEvent.layout,
+      })
+    }
   }
 
   componentWillMount() {
@@ -53,6 +54,7 @@ class AddTile extends Component {
       onMoveShouldSetPanResponderCapture: () => true,
 
       onPanResponderGrant: (e, gestureState) => {
+
         // Set the initial value to the current state
         this.state.pan.setOffset({x: this.state.pan.x._value, y: this.state.pan.y._value});
         this.state.pan.setValue({x: 0, y: 0});
@@ -67,26 +69,22 @@ class AddTile extends Component {
         null, {dx: this.state.pan.x, dy: this.state.pan.y},
       ]),
 
-      onPanResponderRelease: ({ identifier, target, pageX, pageY }, {moveX, moveY, x0, y0, dx, dy, vx, vy}) => {
+      onPanResponderRelease: ( { target }, { moveX, moveY } ) => {
         // Flatten the offset to avoid erratic behavior
         this.state.pan.flattenOffset();
-        this.props.movedTile( { title: this.props.tileProps.word, moveX, moveY } );
-        this.removeButton();
-        // Animated.spring(
-        //   this.state.scale,
-        //   { toValue: 1, friction: 2 }
-        // ).start();
+        let me = this.props.tileProps
+        this.props.tileMoved({ title: me.word, id: me.id, idx: me.idx, moveX, moveY });
       }
     });
   }
 
   render() {
-    console.log("PROPS FROM ADD TILE", this.props.tileProps)
+    // console.log("PROPS FROM ADD TILE", this.props.tileProps)
     // Destructure the value of pan from the state
     let { pan, scale } = this.state;
 
     // Calculate the x and y transform from the pan value
-    let [translateX, translateY] = [pan.x, pan.y];
+    let [translateX, translateY] = [pan.x, pan.y]
     let rotate = '0deg';
 
     // Calculate the transform property and set it as a value for our style which we add below to the Animated.View component
@@ -100,8 +98,12 @@ class AddTile extends Component {
     };
 
     return (
-          <Animated.View style={ tileStyle } { ...this._panResponder.panHandlers } >
-            {this.state.showView && (
+          <Animated.View
+              style={ tileStyle }
+              { ...this._panResponder.panHandlers }
+              onLayout={this.setDropZoneValues.bind(this)}
+            >
+            {this.props.tileProps.show && (
               <Button
                 id={this.props.key}
                 onPress={this._onPressButton.bind(this)}
@@ -110,7 +112,6 @@ class AddTile extends Component {
               />
             )}
           </Animated.View>
-
     );
   }
 }
@@ -119,17 +120,17 @@ const mapStateToProps = (state) => {
   return { ...state };
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    movedTile: (dropCoordiates) => {
-      dispatch(tileDropCoordinates(dropCoordiates));
-    }
-  }
-}
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     movedTile: (dropCoordiates) => {
+//       dispatch(tileDropCoordinates(dropCoordiates));
+//     }
+//   }
+// }
 
 AddTile = connect(
-  mapStateToProps,
-  mapDispatchToProps
+  mapStateToProps
+  // mapDispatchToProps
 )(AddTile);
 
 export default AddTile;

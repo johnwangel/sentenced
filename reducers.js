@@ -1,6 +1,5 @@
 import {
   ADD_TILE,
-  MOVED_TILES,
   UPDATE_SENTENCE,
 } from './actions';
 
@@ -11,8 +10,6 @@ const sentencedReducers = (state = { sentence, tiles }, action) => {
   switch (action.type) {
     case ADD_TILE:
       return loadTile(state, action)
-    case MOVED_TILES:
-      return movedTile(state, action)
     case UPDATE_SENTENCE:
       return updateSent(state, action)
     default:
@@ -21,40 +18,53 @@ const sentencedReducers = (state = { sentence, tiles }, action) => {
 }
 
 function loadTile(state, action){
-  console.log("STATE FROM LOAD TILE ", action)
-  return { sentence: [...state.sentence],
-    tiles : [
-      ...state.tiles,
-      action.tile.tile
-    ]
-  }
-}
+  let idx = parseInt(Math.random()*10000);
+  action.tile.tile.idx = idx;
+  action.tile.tile.show = true;
 
-function movedTile(state, action){
-  let newState = state;
-  return Object.assign({}, state, newState, {moveCoordinates: action.coordinates})
+  return {
+    sentence: [
+        ...state.sentence
+      ],
+    tiles : [
+        ...state.tiles,
+        action.tile.tile
+      ],
+  }
 }
 
 function updateSent(state, action){
-  console.log("STATE FROM UPDATE SENTENCE", state)
   let newSent = state.sentence;
-  newSent[action.wordIDs.sentenceWordID] = action.wordIDs.tileWord;
   let newTiles = state.tiles;
-  newTiles.push(action.wordIDs.newWord);
-  console.log("NEW TILES ", newTiles);
-  return {
-    sentence: [
-      ...newSent
-    ],
-    tiles : [
-      ...newTiles
-    ]
+
+  if (action.wordIDs.replacement_word.update){
+      newSent[action.wordIDs.original_word.id] = action.wordIDs.replacement_word.title;
+      let oldIndex = action.wordIDs.replacement_word.idx;
+      newTiles.forEach( (tile, i) => {
+        if (tile.idx === oldIndex) tile.show = false;
+      });
+      let idx = parseInt(Math.random()*10000);
+      action.wordIDs.new_word.idx = idx;
+      action.wordIDs.new_word.show = true;
+      newTiles.push(action.wordIDs.new_word);
+  } else {
+      let oldIndex = action.wordIDs.replacement_word.idx;
+      let new_word = {};
+      newTiles.forEach( (tile, i) => {
+        if (tile.idx === oldIndex) {
+          Object.assign(new_word, tile)
+          tile.show = false;
+        }
+      });
+      let idx = parseInt(Math.random()*10000);
+      new_word.idx = idx;
+      new_word.show = true;
+      newTiles.push(new_word);
   }
-    // let tiles = state.tiles;
-    // let sentence = state.sentence;
-    // sentence[action.wordIDs.sentenceWordID] = action.wordIDs.tileWord;
-    // tiles.push(action.wordIDs.newWord);
-    // return { tiles, sentence };
+  return {
+    sentence: [ ...newSent ],
+    tiles : [ ...newTiles ],
+  }
 }
 
 export default sentencedReducers;

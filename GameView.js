@@ -32,56 +32,57 @@ class GameView extends Component {
     }
 
     this.state = {
-      pan: new Animated.ValueXY(),
-      scale: new Animated.Value(1),
-      dropZoneValues: null
+      sentenceDropZones: [],
     };
+
   }
 
-  _onPressButton() {
-    Alert.alert('You tapped the button!')
+  updateSentenceDropZones = (dropzone) => {
+    this.setState({ sentenceDropZones: [ dropzone, ...this.state.sentenceDropZones ] })
   }
 
-  componentWillMount() {
-    this._panResponder = PanResponder.create({
-      onMoveShouldSetResponderCapture: () => true,
-      onMoveShouldSetPanResponderCapture: () => true,
+  validDrop(c){
+    if ( c.y_move > c.top_left && c.y_move < c.top_right && c.x_move > c.bottom_left && c.x_move < c.bottom_right) {
+      return true;
+    }
+    return false;
+  }
 
-      onPanResponderGrant: (e, gestureState) => {
-        // Set the initial value to the current state
-        this.state.pan.setOffset({x: this.state.pan.x._value, y: this.state.pan.y._value});
-        this.state.pan.setValue({x: 0, y: 0});
-        Animated.spring(
-          this.state.scale,
-          { toValue: 1.1, friction: 3 }
-        ).start();
-      },
+  tileWasMoved = (replacement_word) => {
+    let zones = this.state.sentenceDropZones;
+    let original_word = {};
+    replacement_word.update = false;
 
-      // When we drag/pan the object, set the delate to the states pan position
-      onPanResponderMove: Animated.event([
-        null, {dx: this.state.pan.x, dy: this.state.pan.y},
-      ]),
-
-      onPanResponderRelease: (e, {vx, vy}) => {
-        // Flatten the offset to avoid erratic behavior
-        console.log("Release vx and vy: ", vx, ' ', vy);
-        this.state.pan.flattenOffset();
-        Animated.spring(
-          this.state.scale,
-          { toValue: 1, friction: 3 }
-        ).start();
+    zones.forEach( zone => {
+      let z = zone.layout;
+      let coordinates = {
+        bottom_left: z.x + 25,
+        bottom_right: z.x + 25 + z.width,
+        top_left: z.y + 150,
+        top_right: z.y + 150 + z.height,
+        x_move: replacement_word.moveX,
+        y_move: replacement_word.moveY,
+      }
+      if ( this.validDrop(coordinates) ){
+        original_word.title = zone.title;
+        original_word.id = zone.id;
+        this.setState({ sentenceDropZones: [] });
+        replacement_word.update = true;
       }
     });
-  }
 
-  setDropZoneValues(event){
-    this.setState({
-        dropZoneValues : event.nativeEvent.layout,
-      });
-  }
-
-  reviseSentence = (sentenceWordID, tileWord, newWord) => {
-    this.props.updateSentence( { sentenceWordID, tileWord, newWord } );
+    if (replacement_word.update){
+      let new_word = '';
+      fetch(RANDOM)
+      .then((response) => response.json())
+      .then((word) => {
+        new_word = word;
+        this.props.updateSentence( { original_word, replacement_word, new_word } );
+      })
+    } else {
+      this.props.updateSentence( { replacement_word } );
+    }
+    this.forceUpdate();
   }
 
   initializeTiles = (tile) => {
@@ -89,41 +90,30 @@ class GameView extends Component {
   }
 
   render() {
-    console.log("PROPS FROM GAME VIEW", this.props.tiles);
 
     return (
       <View>
         <View style={styles.gameContainer}>
-          <View style={styles.sentenceContainer} onLayout={this.setDropZoneValues.bind(this)}>
+          <View style={styles.sentenceContainer}>
             { this.props.sentence.map( (word, idx) => {
                 return <Sentence
                           key={ idx }
                           title={ word }
                           id={ idx }
-                          callback={ this.reviseSentence }
+                          updateDZ={ this.updateSentenceDropZones }
                         />
             })}
           </View>
           <View style={ styles.tileContainer }>
             { this.props.tiles.map( (tile, idx) => {
-                return <AddTile key={idx} tileProps={ tile }/>
+                return <AddTile
+                  key={idx}
+                  tileProps={ tile }
+                  tileMoved={ this.tileWasMoved }
+                 />
             })}
           </View>
           <ScrollView horizontal={true} contentContainerStyle={styles.contentContainer}>
-            <Button color="white" title="Testing"/>
-            <Button color="white" title="Testing"/>
-            <Button color="white" title="Testing"/>
-            <Button color="white" title="Testing"/>
-            <Button color="white" title="Testing"/>
-            <Button color="white" title="Testing"/>
-            <Button color="white" title="Testing"/>
-            <Button color="white" title="Testing"/>
-            <Button color="white" title="Testing"/>
-            <Button color="white" title="Testing"/>
-            <Button color="white" title="Testing"/>
-            <Button color="white" title="Testing"/>
-            <Button color="white" color="white" title="Testing"/>
-            <Button color="white" title="Testing"/>
             <Button color="white" title="Testing"/>
             <Button color="white" title="Testing"/>
           </ScrollView>

@@ -34,44 +34,22 @@ class AddSentence extends Component {
   }
 
   setDropZoneValues(event){
-    this.setState({
-        dropZoneValues : event.nativeEvent.layout,
-      });
+    let zone = event.nativeEvent;
+    zone.title = this.props.title;
+    zone.id = this.props.id;
+    this.props.updateDZ( zone )
   }
 
   render() {
-    let updateComponent = true;
-    if (this.props.moveCoordinates){
-        var dz = this.state.dropZoneValues;
-        let aword = this.props.title;
-        let xd = dz.x + 25;
-        let xd2 = xd + dz.width;
-        let yd = dz.y + 150;
-        let yd2 = yd + dz.height;
-        let xm = this.props.moveCoordinates.moveX;
-        let ym = this.props.moveCoordinates.moveY;
-        let tileWord = this.props.moveCoordinates.title;
-        //console.log({ aword, xd, xd2, xm, yd, yd2, ym, tileWord });
-        if ( ym > yd && ym < yd2 && xm > xd && xm < xd2 ) {
-          let newWord = '';
-          fetch(RANDOM)
-          .then((response) => response.json())
-          .then((word) => {
-            newWord = word;
-            console.log("NEW WORD", newWord)
-            this.props.callback( this.props.id, tileWord, newWord )
-          })
-        };
-    }
-
     return (
       <View style={ styles.sentence } onLayout={this.setDropZoneValues.bind(this)}>
-            <Button
-              id={ this.props.key }
-              onPress={ this._onPressButton }
-              title={ this.props.title }
-              color="white"
-            />
+          <Button
+            style={ styles.word }
+            id={ this.props.key }
+            onPress={ this._onPressButton }
+            title={ this.props.title }
+            color="white"
+          />
       </View>
     );
   }
@@ -79,10 +57,10 @@ class AddSentence extends Component {
 
 const styles = StyleSheet.create({
   sentence: {
-      flex: 0,
-      flexDirection: 'column',
-      justifyContent: 'center',
-      flexWrap: 'wrap',
+    flex: 0,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
   },
 });
 
@@ -92,8 +70,8 @@ const mapStateToProps = (state) => {
 
 // const mapDispatchToProps = (dispatch) => {
 //   return {
-//     onAdd: (newCard) => {
-//       dispatch(addCard(newCard));
+//     addSentenceZone: (zone) => {
+//       dispatch(addSentenceZone(zone));
 //     }
 //   }
 // }
