@@ -4,8 +4,10 @@ import {
   Animated,
   AppRegistry,
   Button,
+  Dimensions,
   Image,
   PanResponder,
+  Platform,
   ScrollView,
   SectionList,
   StyleSheet,
@@ -15,7 +17,10 @@ import {
 import { connect } from 'react-redux'
 import AddTile from './AddTile';
 import Sentence from './Sentence';
+import Stamp from './Stamp';
 import { addTiles, updateSentence } from './actions'
+
+const jailImage = 'https://bloximages.chicago2.vip.townnews.com/hometownsource.com/content/tncms/assets/v3/editorial/6/07/607dbda2-67e4-5069-970c-39d8cd005f1e/599745796ced6.image.jpg'
 
 const RANDOM = 'http://localhost:3000/api/random';
 
@@ -32,6 +37,7 @@ class GameView extends Component {
     }
 
     this.state = {
+      sentenceContainerLayout: [],
       sentenceDropZones: [],
     };
 
@@ -42,7 +48,16 @@ class GameView extends Component {
   }
 
   validDrop(c){
-    if ( c.y_move > c.top_left && c.y_move < c.top_right && c.x_move > c.bottom_left && c.x_move < c.bottom_right) {
+
+    console.log(`
+        ${c.word}
+        ${c.x_move} > ${c.lower_x}
+        ${c.x_move} < ${c.higher_x}
+        ${c.y_move} > ${c.lower_y}
+        ${c.y_move} < ${c.higher_y}
+      `)
+
+    if ( c.x_move > c.lower_x && c.x_move < c.higher_x && c.y_move > c.lower_y && c.y_move < c.higher_y ) {
       return true;
     }
     return false;
@@ -53,20 +68,26 @@ class GameView extends Component {
     let original_word = {};
     replacement_word.update = false;
 
+    let sentenceContainerStart = Dimensions.get('window').height - (Dimensions.get('window').height * (5/8));
+    let navBarTop = Platform.OS === 'ios' ? 64 : 5;
+    let topSpace = sentenceContainerStart + navBarTop;
+
     zones.forEach( zone => {
       let z = zone.layout;
+
       let coordinates = {
-        bottom_left: z.x + 25,
-        bottom_right: z.x + 25 + z.width,
-        top_left: z.y + 150,
-        top_right: z.y + 150 + z.height,
+        word: zone.title,
+        lower_x: z.x,
+        higher_x: z.x + z.width,
+        lower_y: z.y + topSpace,
+        higher_y: z.y + topSpace + z.height,
         x_move: replacement_word.moveX,
         y_move: replacement_word.moveY,
       }
+
       if ( this.validDrop(coordinates) ){
         original_word.title = zone.title;
         original_word.id = zone.id;
-        this.setState({ sentenceDropZones: [] });
         replacement_word.update = true;
       }
     });
@@ -80,9 +101,14 @@ class GameView extends Component {
         this.props.updateSentence( { original_word, replacement_word, new_word } );
       })
     } else {
+      Alert.alert('Drop failed. Pleast try again!')
       this.props.updateSentence( { replacement_word } );
     }
     this.forceUpdate();
+  }
+
+  setDropZoneValues = (event) =>{
+    this.setState( { sentenceContainerLayout: event.nativeEvent.layout } );
   }
 
   initializeTiles = (tile) => {
@@ -91,79 +117,154 @@ class GameView extends Component {
 
   render() {
 
+    const resizeMode = 'cover';
+
     return (
-      <View>
-        <View style={styles.gameContainer}>
-          <View style={styles.sentenceContainer}>
+
+        <View style={styles.gameContainer} onLayout={this.setDropZoneValues}>
+          <Image
+            style={ { flex: 1, resizeMode, width: null, height: null } }
+            source={require('./img/jail.jpg')}
+          >
+          <View style={ styles.sentenceContainer }>
             { this.props.sentence.map( (word, idx) => {
+
                 return <Sentence
                           key={ idx }
-                          title={ word }
                           id={ idx }
+                          sentenceButtonStyles={ styles.sentenceButtonStyles }
+                          sentenceTextStyles={ styles.sentenceTextStyles }
+                          sentencePOSStyles={ styles.sentencePOSStyles }
+                          sentenceProps={ word }
                           updateDZ={ this.updateSentenceDropZones }
-                        />
+                        ></Sentence>
             })}
           </View>
           <View style={ styles.tileContainer }>
             { this.props.tiles.map( (tile, idx) => {
+
                 return <AddTile
-                  key={idx}
-                  tileProps={ tile }
-                  tileMoved={ this.tileWasMoved }
-                 />
+                          key={ idx }
+                          tileButtonStyles={ styles.tileButtonStyles }
+                          tileTextStyles={ styles.tileTextStyles }
+                          tilePOSStyles={ styles.tilePOSStyles }
+                          tileProps={ tile }
+                          tileMoved={ this.tileWasMoved }
+                        ></AddTile>
             })}
           </View>
-          <ScrollView horizontal={true} contentContainerStyle={styles.contentContainer}>
-            <Button color="white" title="Testing"/>
-            <Button color="white" title="Testing"/>
+          <ScrollView horizontal={ true } style={ styles.stampContainerStyle }>
+            { this.props.stamps.map( (stamp, idx) => {
+                return <Stamp
+                          key={ idx }
+                          stampProps={ stamp }
+                          stampButtonStyles={ styles.stampButtonStyles }
+                          stampTextStyles={ styles.stampTextStyles }
+                          >
+                        </Stamp>
+            })}
           </ScrollView>
+        </Image>
        </View>
-      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
   gameContainer: {
-   marginTop: 0,
-   marginLeft: 0,
    marginRight: 0,
-   marginBottom: 0,
+   height: Dimensions.get('window').height,
+   width: Dimensions.get('window').width,
    flex: 0,
    flexDirection: 'column',
-   justifyContent: 'flex-start',
    flexWrap: 'wrap',
   },
   sentenceContainer: {
-   backgroundColor: 'red',
-   marginTop: 100,
-   marginLeft: 25,
-   marginRight: 25,
-   borderRadius: 10,
-   borderWidth: 1,
-   borderColor: 'red',
+   backgroundColor: 'transparent',
+   position: 'absolute',
+   top: Dimensions.get('window').height - Dimensions.get('window').height * (5/8),
+   width: Dimensions.get('window').width,
    flex: 0,
    flexDirection: 'row',
    justifyContent: 'center',
    flexWrap: 'wrap',
+  },
+  sentenceButtonStyles: {
+    backgroundColor: 'red',
+    opacity: 1,
+    margin: 5,
+    padding: 3,
+    borderRadius: 10,
+    borderWidth: 3,
+    borderColor: 'white',
+  },
+  sentenceTextStyles: {
+    paddingTop: 3,
+    paddingLeft: 3,
+    paddingRight: 3,
+    textAlign: 'center',
+    color: 'white',
+    fontSize: 20,
+  },
+  sentencePOSStyles: {
+    paddingBottom: 2,
+    textAlign: 'center',
+    color: 'white',
+    fontSize: 14,
   },
   tileContainer: {
-   backgroundColor: 'blue',
-   marginTop: 200,
-   marginTop: 200,
-   borderRadius: 10,
-   borderWidth: 1,
-   borderColor: 'blue',
+   backgroundColor: 'transparent',
+   position: 'absolute',
+   top: Dimensions.get('window').height - Dimensions.get('window').height * (6/16),
+   width: Dimensions.get('window').width,
    flex: 0,
    flexDirection: 'row',
    justifyContent: 'center',
    flexWrap: 'wrap',
   },
-  contentContainer: {
-    marginTop: 225,
+  tileButtonStyles: {
+    backgroundColor: 'blue',
+    margin: 5,
+    padding: 3,
+    borderRadius: 10,
+    borderWidth: 4,
+    borderColor: 'white',
+  },
+  tileTextStyles: {
+    padding: 5,
+    textAlign: 'center',
+    color: 'white',
+    fontSize: 20,
+  },
+  tilePOSStyles: {
+    paddingBottom: 2,
+    textAlign: 'center',
+    color: 'white',
+    fontSize: 12,
+  },
+  stampContainerStyle: {
+    position: 'absolute',
+    height: Dimensions.get('window').height/4,
+    top: Dimensions.get('window').height -200,
+    left: 0,
     backgroundColor: 'green',
     paddingVertical: 20,
-  }
+  },
+  stampButtonStyles: {
+    height: 75,
+    width: 75,
+    backgroundColor: 'white',
+    margin: 5,
+  },
+  stampTextStyles: {
+    padding: 5,
+    textAlign: 'center',
+    color: 'darkgreen',
+    fontWeight: 'bold',
+    fontSize: 14,
+    backgroundColor: 'transparent',
+    padding: 3,
+  },
 });
 
 const mapStateToProps = (state) => {

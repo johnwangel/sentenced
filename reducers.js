@@ -3,10 +3,22 @@ import {
   UPDATE_SENTENCE,
 } from './actions';
 
-let sentence = ['The', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog', '.']
+let sentence = [
+    { word: 'The', pos: "article", },
+    { word: 'quick', pos: "adjective", },
+    { word: 'brown', pos: "adjective", },
+    { word: 'fox', pos: "noun", },
+    { word: 'jumps', pos: "verb", },
+    { word: 'over', pos: "preposition", },
+    { word: 'the', pos: "article", },
+    { word: 'lazy', pos: "adjective", },
+    { word: 'dog', pos: "noun", },
+    { word: '.', pos: "punctuation", },
+  ]
 let tiles = [];
+let stamps = [ 'Make Plural', 'Make Singular', 'Make First Person', 'Make Past Tense', 'Make Future Tense', 'Make Future Perfect Tense', 'Make Past Perfect Tense' ];
 
-const sentencedReducers = (state = { sentence, tiles }, action) => {
+const sentencedReducers = (state = { sentence, tiles, stamps }, action) => {
   switch (action.type) {
     case ADD_TILE:
       return loadTile(state, action)
@@ -30,6 +42,9 @@ function loadTile(state, action){
         ...state.tiles,
         action.tile.tile
       ],
+    stamps : [
+        ...state.stamps
+      ],
   }
 }
 
@@ -37,8 +52,10 @@ function updateSent(state, action){
   let newSent = state.sentence;
   let newTiles = state.tiles;
 
+  console.log("ACTION", action)
+
   if (action.wordIDs.replacement_word.update){
-      newSent[action.wordIDs.original_word.id] = action.wordIDs.replacement_word.title;
+      newSent[action.wordIDs.original_word.id].word = action.wordIDs.replacement_word.title;
       let oldIndex = action.wordIDs.replacement_word.idx;
       newTiles.forEach( (tile, i) => {
         if (tile.idx === oldIndex) tile.show = false;
@@ -64,6 +81,7 @@ function updateSent(state, action){
   return {
     sentence: [ ...newSent ],
     tiles : [ ...newTiles ],
+    stamps : [ ...state.stamps ],
   }
 }
 

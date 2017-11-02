@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity,
 } from 'react-native';
 
 class AddTile extends Component {
@@ -26,6 +27,25 @@ class AddTile extends Component {
       initValSet: null,
     };
   }
+
+  static propTypes = {
+      tileTextStyles: React.PropTypes.oneOfType([
+        React.PropTypes.array,
+        React.PropTypes.number,
+        React.PropTypes.shape({}),
+      ]).isRequired,
+      tileButtonStyles: React.PropTypes.oneOfType([
+        React.PropTypes.array,
+        React.PropTypes.number,
+        React.PropTypes.shape({}),
+      ]).isRequired,
+      tilePOSStyles: React.PropTypes.oneOfType([
+        React.PropTypes.array,
+        React.PropTypes.number,
+        React.PropTypes.shape({}),
+      ]).isRequired,
+  }
+
 
   _onPressButton() {
     let o = this.props.tileProps;
@@ -64,7 +84,6 @@ class AddTile extends Component {
         ).start();
       },
 
-      // When we drag/pan the object, set the delate to the states pan position
       onPanResponderMove: Animated.event([
         null, {dx: this.state.pan.x, dy: this.state.pan.y},
       ]),
@@ -78,21 +97,44 @@ class AddTile extends Component {
     });
   }
 
-  render() {
-    // console.log("PROPS FROM ADD TILE", this.props.tileProps)
-    // Destructure the value of pan from the state
-    let { pan, scale } = this.state;
+  abbreviate( pos ) {
+    switch ( pos ) {
+      case "noun":
+        return 'n';
+      case 'verb':
+        return 'v';
+      case 'article':
+        return 'art';
+      case 'adjective':
+        return 'adj';
+      case 'adverb':
+        return 'adv';
+      case 'preposition':
+        return 'prep';
+      case 'conjunction':
+        return 'conj';
+      case 'interjection':
+        return 'interj';
+      case 'pronoun':
+        return 'pron';
+      case 'punctuation':
+        return;
+    }
+  }
 
-    // Calculate the x and y transform from the pan value
+  render() {
+    const { tileTextStyles, tileButtonStyles, tilePOSStyles } = this.props;
+    let abbrev = this.abbreviate( this.props.tileProps.pos );
+
+    let { pan, scale } = this.state;
     let [translateX, translateY] = [pan.x, pan.y]
     let rotate = '0deg';
 
-    // Calculate the transform property and set it as a value for our style which we add below to the Animated.View component
     let tileStyle = {
       flex: 0,
       borderRadius: 4,
       flexDirection: 'row',
-      justifyContent: 'center',
+      justifyContent: 'space-evenly',
       flexWrap: 'wrap',
       transform: [ {translateX}, {translateY}, {rotate}, {scale} ]
     };
@@ -104,12 +146,20 @@ class AddTile extends Component {
               onLayout={this.setDropZoneValues.bind(this)}
             >
             {this.props.tileProps.show && (
-              <Button
-                id={this.props.key}
-                onPress={this._onPressButton.bind(this)}
-                title={this.props.tileProps.word}
-                color="white"
-              />
+
+                <TouchableOpacity style={ tileButtonStyles }>
+                  <Text
+                    id={ this.props.key }
+                    onPress={ this._onPressButton.bind(this) }
+                    style={ tileTextStyles }>
+                      { this.props.tileProps.word }
+                  </Text>
+                  <Text
+                    id={ this.props.key }
+                    style={ tilePOSStyles }>
+                      { abbrev }
+                  </Text>
+                </TouchableOpacity>
             )}
           </Animated.View>
     );
