@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
-import { AppRegistry, Text, View, Button } from 'react-native';
+import {
+  AppRegistry,
+  Button,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
 import { StackNavigator } from 'react-navigation';
 import GameView from './GameView';
 
@@ -20,18 +28,24 @@ const store = createStore(
 
 class HomeScreen extends Component {
   static navigationOptions = {
-    title: 'Sentenced Home',
+    title: 'Home',
   };
   render() {
     const { navigate } = this.props.navigation;
     return (
       <Provider store={store}>
-        <View>
-          <Text>Hello, Sentenced!</Text>
-          <Button
-            onPress={() => navigate('Game')}
-            title="New Game"
-          />
+        <View style={ styles.main }>
+          <Text style= {styles.title} >SENTENCED</Text>
+
+          <TouchableOpacity
+              style={ styles.button }
+              onPress={() => navigate('Game')}
+            >
+            <Text
+              style={ styles.buttonText }>
+                New Game
+            </Text>
+          </TouchableOpacity>
         </View>
       </Provider>
     );
@@ -40,7 +54,7 @@ class HomeScreen extends Component {
 
 class GameScreen extends React.Component {
   static navigationOptions = {
-    title: 'Game',
+    title: 'Sentenced',
   };
   render() {
     return (
@@ -52,6 +66,36 @@ class GameScreen extends React.Component {
     );
   }
 };
+
+
+const styles = StyleSheet.create({
+  main: {
+   marginRight: 0,
+   flex: 0,
+   flexDirection: 'column',
+   justifyContent: 'center',
+  },
+  title: {
+    marginTop: 100,
+    textAlign: 'center',
+    fontSize: 56,
+    color: '#F75F48',
+    fontWeight: '900',
+  },
+  button: {
+    marginTop: 50,
+    width: '100%',
+    height: '10%',
+    backgroundColor: 'white',
+  },
+  buttonText: {
+    padding: 10,
+    textAlign: 'center',
+    fontSize: '24',
+    color: '#F75F48',
+    fontWeight: '600',
+  },
+});
 
 export default SentencedApp = StackNavigator({
   Home: { screen: HomeScreen },
