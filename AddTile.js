@@ -46,19 +46,33 @@ class AddTile extends Component {
       ]).isRequired,
   }
 
-
   _onPressButton() {
     let o = this.props.tileProps;
     let str = '';
     for(var prop in o){
       str = str + `${prop}: ${o[prop]}` + '\n';
     }
-
     Alert.alert(str)
   }
 
+  _onLongPressButton() {
+
+    Alert.alert(
+      'Swap Tile',
+      'Are you sure you want to swap this tile?',
+      [
+        {text: 'Yes, go ahead', onPress: () => {
+            let tile = this.props.tileProps;
+            this.props.swapTile(tile);
+          }
+        },
+        {text: 'Forget it', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+      ],
+      { cancelable: false }
+    )
+  }
+
   setDropZoneValues(event){
-    // console.log("INIT VAL", event.nativeEvent.layout);
     if (this.state.initValSet === null) {
       this.setState({
         initValSet : event.nativeEvent.layout,
@@ -92,7 +106,7 @@ class AddTile extends Component {
         // Flatten the offset to avoid erratic behavior
         this.state.pan.flattenOffset();
         let me = this.props.tileProps
-        this.props.tileMoved({ title: me.word, id: me.id, idx: me.idx, moveX, moveY });
+        this.props.tileMoved({ tile: me, moveX, moveY });
       }
     });
   }
@@ -151,6 +165,7 @@ class AddTile extends Component {
                   <Text
                     id={ this.props.key }
                     onPress={ this._onPressButton.bind(this) }
+                    onLongPress={ this._onLongPressButton.bind(this) }
                     style={ tileTextStyles }>
                       { this.props.tileProps.word }
                   </Text>
@@ -172,8 +187,8 @@ const mapStateToProps = (state) => {
 
 // const mapDispatchToProps = (dispatch) => {
 //   return {
-//     movedTile: (dropCoordiates) => {
-//       dispatch(tileDropCoordinates(dropCoordiates));
+//     swapTiles: (tiles) => {
+//       dispatch( swapTile(tiles) );
 //     }
 //   }
 // }

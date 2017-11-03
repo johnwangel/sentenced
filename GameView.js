@@ -11,16 +11,24 @@ import {
   ScrollView,
   SectionList,
   StyleSheet,
+  TouchableHighlight,
   Text,
   View,
 } from 'react-native';
+
 import { connect } from 'react-redux'
 import AddTile from './AddTile';
 import Sentence from './Sentence';
 import Stamp from './Stamp';
-import { addTiles, updateSentence } from './actions'
 
-const jailImage = 'https://bloximages.chicago2.vip.townnews.com/hometownsource.com/content/tncms/assets/v3/editorial/6/07/607dbda2-67e4-5069-970c-39d8cd005f1e/599745796ced6.image.jpg'
+import {  addTiles,
+          updateSentence,
+          replaceTile,
+          swapTile,
+        } from './actions'
+
+import Drop from "./Drop"
+import Noun from "./Nouns"
 
 const RANDOM = 'http://localhost:3000/api/random';
 
@@ -40,43 +48,39 @@ class GameView extends Component {
       sentenceContainerLayout: [],
       sentenceDropZones: [],
     };
-
   }
 
   updateSentenceDropZones = (dropzone) => {
     this.setState({ sentenceDropZones: [ dropzone, ...this.state.sentenceDropZones ] })
   }
 
-  validDrop(c){
+  swap = ( orig_word ) => {
+    fetch(RANDOM)
+    .then((response) => response.json())
+    .then((new_word) => {
+      this.props.swapTiles( { orig_word, new_word } );
+    });
 
-    console.log(`
-        ${c.word}
-        ${c.x_move} > ${c.lower_x}
-        ${c.x_move} < ${c.higher_x}
-        ${c.y_move} > ${c.lower_y}
-        ${c.y_move} < ${c.higher_y}
-      `)
-
-    if ( c.x_move > c.lower_x && c.x_move < c.higher_x && c.y_move > c.lower_y && c.y_move < c.higher_y ) {
-      return true;
-    }
-    return false;
   }
 
   tileWasMoved = (replacement_word) => {
+
     let zones = this.state.sentenceDropZones;
     let original_word = {};
     replacement_word.update = false;
+    drop_successful = false;
 
     let sentenceContainerStart = Dimensions.get('window').height - (Dimensions.get('window').height * (5/8));
-    let navBarTop = Platform.OS === 'ios' ? 64 : 5;
+    let navBarTop = Platform.OS === 'ios' ? 64 : 56;
     let topSpace = sentenceContainerStart + navBarTop;
 
     zones.forEach( zone => {
+
       let z = zone.layout;
 
       let coordinates = {
-        word: zone.title,
+        word: zone.properties.word,
+        pos: zone.properties.pos,
         lower_x: z.x,
         higher_x: z.x + z.width,
         lower_y: z.y + topSpace,
@@ -86,25 +90,50 @@ class GameView extends Component {
       }
 
       if ( this.validDrop(coordinates) ){
-        original_word.title = zone.title;
-        original_word.id = zone.id;
-        replacement_word.update = true;
+        drop_successful = true;
+
+        var dropTest = new Drop(zone.properties, replacement_word);
+        if (dropTest.checkDrop()) {
+            original_word.title = zone.properties.word;
+            original_word.id = zone.id;
+            replacement_word.update = true;
+        }
       }
     });
 
-    if (replacement_word.update){
+    if (drop_successful){
       let new_word = '';
       fetch(RANDOM)
       .then((response) => response.json())
       .then((word) => {
         new_word = word;
-        this.props.updateSentence( { original_word, replacement_word, new_word } );
+        if (replacement_word.update){
+          Alert.alert('Congratulations! Your grammar is correct.')
+          this.props.updateSentence( { original_word, replacement_word, new_word } );
+        } else {
+          Alert.alert('Sorry the grammar does not match. You will lose the tile and a new tile will be selected.')
+          this.props.replaceTile( { replacement_word, new_word } );
+        }
       })
     } else {
-      Alert.alert('Drop failed. Pleast try again!')
+      Alert.alert('Invalid drop. Pleast try again!')
       this.props.updateSentence( { replacement_word } );
     }
     this.forceUpdate();
+  }
+
+  validDrop(c){
+    console.log(`VALUE CHECK:
+        ${c.word}
+        ${c.x_move} > ${c.lower_x}
+        ${c.x_move} < ${c.higher_x}
+        ${c.y_move} > ${c.lower_y}
+        ${c.y_move} < ${c.higher_y}
+      `)
+    if ( c.x_move > c.lower_x && c.x_move < c.higher_x && c.y_move > c.lower_y && c.y_move < c.higher_y ) {
+      return true;
+    }
+    return false;
   }
 
   setDropZoneValues = (event) =>{
@@ -129,7 +158,7 @@ class GameView extends Component {
           <View style={ styles.sentenceContainer }>
             { this.props.sentence.map( (word, idx) => {
 
-                return <Sentence
+                return  <Sentence
                           key={ idx }
                           id={ idx }
                           sentenceButtonStyles={ styles.sentenceButtonStyles }
@@ -150,6 +179,7 @@ class GameView extends Component {
                           tilePOSStyles={ styles.tilePOSStyles }
                           tileProps={ tile }
                           tileMoved={ this.tileWasMoved }
+                          swapTile={ this.swap }
                         ></AddTile>
             })}
           </View>
@@ -273,12 +303,18 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateSentence: (changeIDs) => {
-      dispatch(updateSentence(changeIDs));
+    updateSentence: ( changeIDs ) => {
+      dispatch( updateSentence( changeIDs ) );
+    },
+    replaceTile: ( tiles ) => {
+      dispatch( replaceTile( tiles ) );
     },
     initTiles: ( tile ) => {
-      dispatch(addTiles(tile));
+      dispatch( addTiles( tile ) );
     },
+    swapTiles: (tiles) => {
+      dispatch( swapTile(tiles) );
+    }
   }
 }
 

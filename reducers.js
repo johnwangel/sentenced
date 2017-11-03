@@ -1,6 +1,8 @@
 import {
   ADD_TILE,
   UPDATE_SENTENCE,
+  REPLACE_TILE,
+  SWAP_TILE,
 } from './actions';
 
 let sentence = [
@@ -24,6 +26,10 @@ const sentencedReducers = (state = { sentence, tiles, stamps }, action) => {
       return loadTile(state, action)
     case UPDATE_SENTENCE:
       return updateSent(state, action)
+    case REPLACE_TILE:
+      return replaceTile(state, action)
+    case SWAP_TILE:
+      return swapTile(state, action)
     default:
       return state;
   }
@@ -52,11 +58,11 @@ function updateSent(state, action){
   let newSent = state.sentence;
   let newTiles = state.tiles;
 
-  console.log("ACTION", action)
+  // console.log("ACTION", action)
 
   if (action.wordIDs.replacement_word.update){
-      newSent[action.wordIDs.original_word.id].word = action.wordIDs.replacement_word.title;
-      let oldIndex = action.wordIDs.replacement_word.idx;
+      newSent[action.wordIDs.original_word.id].word = action.wordIDs.replacement_word.tile.word;
+      let oldIndex = action.wordIDs.replacement_word.tile.idx;
       newTiles.forEach( (tile, i) => {
         if (tile.idx === oldIndex) tile.show = false;
       });
@@ -65,7 +71,7 @@ function updateSent(state, action){
       action.wordIDs.new_word.show = true;
       newTiles.push(action.wordIDs.new_word);
   } else {
-      let oldIndex = action.wordIDs.replacement_word.idx;
+      let oldIndex = action.wordIDs.replacement_word.tile.idx;
       let new_word = {};
       newTiles.forEach( (tile, i) => {
         if (tile.idx === oldIndex) {
@@ -84,5 +90,47 @@ function updateSent(state, action){
     stamps : [ ...state.stamps ],
   }
 }
+
+function replaceTile(state, action){
+  let newTiles = state.tiles;
+
+  let oldIndex = action.tile.replacement_word.tile.idx;
+  newTiles.forEach( (tile, i) => {
+    if (tile.idx === oldIndex) tile.show = false;
+  });
+  let idx = parseInt(Math.random()*10000);
+  action.tile.new_word.idx = idx;
+  action.tile.new_word.show = true;
+  newTiles.push(action.tile.new_word);
+
+  return {
+    sentence: [ ...state.sentence ],
+    tiles : [ ...newTiles ],
+    stamps : [ ...state.stamps ],
+  }
+}
+
+function swapTile(state, action){
+  let newTiles = state.tiles;
+
+  console.log("ACTION IN SWAP", action);
+
+  let oldIndex = action.tiles.orig_word.idx;
+  console.log("OLD INDEX", oldIndex);
+  newTiles.forEach( (tile, i) => {
+    if (tile.idx === oldIndex) tile.show = false;
+  });
+  let idx = parseInt(Math.random()*10000);
+  action.tiles.new_word.idx = idx;
+  action.tiles.new_word.show = true;
+  newTiles.push(action.tiles.new_word);
+
+  return {
+    sentence: [ ...state.sentence ],
+    tiles : [ ...newTiles ],
+    stamps : [ ...state.stamps ],
+  }
+}
+
 
 export default sentencedReducers;

@@ -55,13 +55,12 @@ class AddSentence extends Component {
 
   setDropZoneValues(event){
     let zone = event.nativeEvent;
-    zone.title = this.props.sentenceProps.word;
+    zone.properties = this.props.sentenceProps;
     zone.id = this.props.id;
     this.props.updateDZ( zone )
   }
 
   abbreviate( pos ) {
-    console.log("GETTING HERE", pos);
     switch ( pos ) {
       case "noun":
         return 'n';
