@@ -78,7 +78,9 @@ class AddSentence extends Component {
         return 'conj';
       case 'interjection':
         return 'interj';
-      case 'pronoun':
+      case 'pronoun_personal':
+        return 'pron';
+      case 'pronoun_other':
         return 'pron';
       case 'punctuation':
         return;
@@ -90,9 +92,21 @@ class AddSentence extends Component {
 
     let abbrev = this.abbreviate( this.props.sentenceProps.pos );
 
+    let color = this.props.sentenceProps.updated ? 'gray' : 'red';
+
+    let sentenceButtonStyle = {
+      backgroundColor: color,
+      opacity: 1,
+      margin: 5,
+      padding: 3,
+      borderRadius: 10,
+      borderWidth: 3,
+      borderColor: 'white',
+    }
+
     return (
       <View style={ styles.sentence } onPress={ this._onPressButton.bind(this) } onLayout={this.setDropZoneValues.bind(this)}>
-        <TouchableOpacity style={ sentenceButtonStyles }>
+        <TouchableOpacity style={ sentenceButtonStyle }>
           <Text
             id={ this.props.key }
             style={ sentenceTextStyles }>
@@ -124,8 +138,8 @@ const mapStateToProps = (state) => {
 
 // const mapDispatchToProps = (dispatch) => {
 //   return {
-//     addSentenceZone: (zone) => {
-//       dispatch(addSentenceZone(zone));
+//     wordChanged: (word) => {
+//       dispatch(wordChanged(word));
 //     }
 //   }
 // }

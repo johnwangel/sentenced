@@ -11,7 +11,7 @@ import {
   ScrollView,
   SectionList,
   StyleSheet,
-  TouchableHighlight,
+  TouchableOpacity,
   Text,
   View,
 } from 'react-native';
@@ -22,15 +22,20 @@ import Sentence from './Sentence';
 import Stamp from './Stamp';
 
 import {  addTiles,
+          addSentence,
           updateSentence,
           replaceTile,
           swapTile,
+          updateTile,
         } from './actions'
 
 import Drop from "./Drop"
 import Noun from "./Nouns"
+import CheckStamp from "./CheckStamp"
+import Parser from "./Parser"
 
 const RANDOM = 'http://localhost:3000/api/random';
+const SENTENCE = 'http://localhost:3000/api/sentence';
 
 class GameView extends Component {
   constructor(props) {
@@ -44,14 +49,73 @@ class GameView extends Component {
       });
     }
 
+    fetch(SENTENCE)
+    .then(res => res.json())
+    .then(new_sentence => {
+      this.props.initSentence(new_sentence);
+    });
+
     this.state = {
       sentenceContainerLayout: [],
       sentenceDropZones: [],
     };
   }
 
+  static propTypes = {
+    stampTextStyles: React.PropTypes.oneOfType([
+      React.PropTypes.array,
+      React.PropTypes.number,
+      React.PropTypes.shape({}),
+    ]).isRequired,
+    stampButtonStyles: React.PropTypes.oneOfType([
+      React.PropTypes.array,
+      React.PropTypes.number,
+      React.PropTypes.shape({}),
+    ]).isRequired,
+  }
+
+  _onPressSwap() {
+    if (this.props.tiles.every( tile => !tile.pressed )) return Alert.alert("No tiles were selected. Select one or more tiles and try again.");
+    this.props.tiles.forEach( tile => {
+      if (tile.show && tile.pressed ) this.swap( tile )
+    });
+  }
+
+  _onPressCommissary() {
+    Alert.alert('You tapped the Commissary!')
+  }
+
   updateSentenceDropZones = (dropzone) => {
     this.setState({ sentenceDropZones: [ dropzone, ...this.state.sentenceDropZones ] })
+  }
+
+  checkStamp = (stamp) => {
+    let total = this.props.tiles.reduce( (sum, tile) => {
+        if (tile.show === true && tile.pressed) {
+          return ++sum;
+        } else {
+          return sum;
+        }
+      }, 0);
+
+    if (total < 1){
+      Alert.alert(`You don't have a tile selected. Select one tile, then try again.`)
+    } else if (total > 1) {
+      Alert.alert(`You have more than one tile selected. Select one tile, then try again.`)
+    } else {
+      let selection = this.props.tiles.filter( tile => {
+        if (tile.show && tile.pressed) {
+          return tile;
+        }
+      })[0];
+      var stampValid = new CheckStamp(stamp, selection);
+      let result = stampValid.test();
+      if(result){
+        this.props.updateTile(result);
+      } else {
+        Alert.alert(`That was not a valid action for the selected tile.`)
+      }
+    }
   }
 
   swap = ( orig_word ) => {
@@ -60,7 +124,6 @@ class GameView extends Component {
     .then((new_word) => {
       this.props.swapTiles( { orig_word, new_word } );
     });
-
   }
 
   tileWasMoved = (replacement_word) => {
@@ -96,12 +159,17 @@ class GameView extends Component {
         if (dropTest.checkDrop()) {
             original_word.title = zone.properties.word;
             original_word.id = zone.id;
-            replacement_word.update = true;
+            if (!zone.properties.updated) {
+              replacement_word.update = true;
+            }
         }
       }
     });
 
-    if (drop_successful){
+    if (drop_successful && !replacement_word.update){
+      Alert.alert('That word has already been updated! Please try again.')
+      this.props.updateSentence( { replacement_word } );
+    } else if (drop_successful) {
       let new_word = '';
       fetch(RANDOM)
       .then((response) => response.json())
@@ -116,7 +184,7 @@ class GameView extends Component {
         }
       })
     } else {
-      Alert.alert('Invalid drop. Pleast try again!')
+      // Alert.alert('Invalid drop. Pleast try again!')
       this.props.updateSentence( { replacement_word } );
     }
     this.forceUpdate();
@@ -155,9 +223,29 @@ class GameView extends Component {
             style={ { flex: 1, resizeMode, width: null, height: null } }
             source={require('./img/jail.jpg')}
           >
+
+          <View style={styles.menu}>
+
+            <TouchableOpacity style={ styles.menuButton }>
+                  <Text
+                    onPress={ this._onPressSwap.bind(this) }
+                    style={ styles.menuText }>
+                    Swap Tiles
+                  </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={ styles.menuButton }>
+                  <Text
+                    onPress={ this._onPressCommissary.bind(this) }
+                    style={ styles.menuText }>
+                    Commissary
+                  </Text>
+            </TouchableOpacity>
+
+
+          </View>
+
           <View style={ styles.sentenceContainer }>
             { this.props.sentence.map( (word, idx) => {
-
                 return  <Sentence
                           key={ idx }
                           id={ idx }
@@ -171,8 +259,8 @@ class GameView extends Component {
           </View>
           <View style={ styles.tileContainer }>
             { this.props.tiles.map( (tile, idx) => {
-
-                return <AddTile
+                { if (tile.show) {
+                  return <AddTile
                           key={ idx }
                           tileButtonStyles={ styles.tileButtonStyles }
                           tileTextStyles={ styles.tileTextStyles }
@@ -181,6 +269,7 @@ class GameView extends Component {
                           tileMoved={ this.tileWasMoved }
                           swapTile={ this.swap }
                         ></AddTile>
+                  }}
             })}
           </View>
           <ScrollView horizontal={ true } style={ styles.stampContainerStyle }>
@@ -190,8 +279,8 @@ class GameView extends Component {
                           stampProps={ stamp }
                           stampButtonStyles={ styles.stampButtonStyles }
                           stampTextStyles={ styles.stampTextStyles }
-                          >
-                        </Stamp>
+                          stampCheck={ this.checkStamp }
+                        ></Stamp>
             })}
           </ScrollView>
         </Image>
@@ -208,6 +297,34 @@ const styles = StyleSheet.create({
    flex: 0,
    flexDirection: 'column',
    flexWrap: 'wrap',
+  },
+  menu: {
+    position: 'absolute',
+    width: '100%',
+    height: Dimensions.get('window').height/16,
+    top: 0,
+    left: 0,
+    backgroundColor: '#F75F48',
+    flex: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  menuButton: {
+    fontSize: 14,
+    padding: 5,
+    paddingRight: 5,
+    paddingLeft: 5,
+    margin: 10,
+    backgroundColor: 'white',
+    borderColor: 'lightgray',
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  menuText: {
+    fontSize: 16,
+    color: '#F75F48',
+    textAlign: 'center',
+    fontWeight: '700',
   },
   sentenceContainer: {
    backgroundColor: 'transparent',
@@ -312,9 +429,15 @@ const mapDispatchToProps = (dispatch) => {
     initTiles: ( tile ) => {
       dispatch( addTiles( tile ) );
     },
+    initSentence: ( sentence ) => {
+      dispatch( addSentence( sentence ) );
+    },
     swapTiles: (tiles) => {
       dispatch( swapTile(tiles) );
-    }
+    },
+    updateTile: (tile) => {
+      dispatch( updateTile(tile) );
+    },
   }
 }
 

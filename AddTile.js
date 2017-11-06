@@ -14,6 +14,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import {  tilePressed, } from './actions'
+
 class AddTile extends Component {
   constructor(props) {
 
@@ -25,6 +27,7 @@ class AddTile extends Component {
       showDraggable   : true,
       dropZoneValues  : null,
       initValSet: null,
+      pressed: false,
     };
   }
 
@@ -47,29 +50,27 @@ class AddTile extends Component {
   }
 
   _onPressButton() {
+    if (this.state.pressed) {
+      this.setState({ pressed: false })
+      let tile = this.props.tileProps;
+      tile.pressed = false;
+      this.props.tileSelected(tile);
+    } else {
+      this.setState({ pressed: true })
+      let tile = this.props.tileProps;
+      tile.pressed = true;
+      this.props.tileSelected(tile);
+    }
+  }
+
+  _onLongPressButton() {
+
     let o = this.props.tileProps;
     let str = '';
     for(var prop in o){
       str = str + `${prop}: ${o[prop]}` + '\n';
     }
     Alert.alert(str)
-  }
-
-  _onLongPressButton() {
-
-    Alert.alert(
-      'Swap Tile',
-      'Are you sure you want to swap this tile?',
-      [
-        {text: 'Yes, go ahead', onPress: () => {
-            let tile = this.props.tileProps;
-            this.props.swapTile(tile);
-          }
-        },
-        {text: 'Forget it', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-      ],
-      { cancelable: false }
-    )
   }
 
   setDropZoneValues(event){
@@ -147,11 +148,24 @@ class AddTile extends Component {
     let tileStyle = {
       flex: 0,
       borderRadius: 4,
+      borderColor: this.state.borderColor,
       flexDirection: 'row',
       justifyContent: 'space-evenly',
       flexWrap: 'wrap',
       transform: [ {translateX}, {translateY}, {rotate}, {scale} ]
     };
+
+    let color = this.state.pressed ? 'yellow' : 'white';
+
+    let tileButtonStyle = {
+      backgroundColor: 'blue',
+      margin: 5,
+      padding: 3,
+      borderRadius: 10,
+      borderWidth: 5,
+      color: color,
+      borderColor: color,
+    }
 
     return (
           <Animated.View
@@ -159,9 +173,7 @@ class AddTile extends Component {
               { ...this._panResponder.panHandlers }
               onLayout={this.setDropZoneValues.bind(this)}
             >
-            {this.props.tileProps.show && (
-
-                <TouchableOpacity style={ tileButtonStyles }>
+                <TouchableOpacity style={ tileButtonStyle }>
                   <Text
                     id={ this.props.key }
                     onPress={ this._onPressButton.bind(this) }
@@ -175,7 +187,6 @@ class AddTile extends Component {
                       { abbrev }
                   </Text>
                 </TouchableOpacity>
-            )}
           </Animated.View>
     );
   }
@@ -185,17 +196,17 @@ const mapStateToProps = (state) => {
   return { ...state };
 }
 
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     swapTiles: (tiles) => {
-//       dispatch( swapTile(tiles) );
-//     }
-//   }
-// }
+const mapDispatchToProps = (dispatch) => {
+  return {
+    tileSelected: (tile) => {
+      dispatch( tilePressed(tile) );
+    }
+  }
+}
 
 AddTile = connect(
-  mapStateToProps
-  // mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(AddTile);
 
 export default AddTile;

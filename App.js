@@ -23,7 +23,6 @@ import { createStore, applyMiddleware } from 'redux';
 const store = createStore(
     sentencedReducers,
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-    // applyMiddleware(ReduxThunk)
 );
 
 class HomeScreen extends Component {
@@ -66,7 +65,6 @@ class GameScreen extends React.Component {
     );
   }
 };
-
 
 const styles = StyleSheet.create({
   main: {
