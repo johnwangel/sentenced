@@ -159,6 +159,7 @@ class AddTile extends Component {
 
     let tileButtonStyle = {
       backgroundColor: 'blue',
+      maxHeight: 60,
       margin: 5,
       padding: 3,
       borderRadius: 10,

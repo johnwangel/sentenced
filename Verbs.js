@@ -1,11 +1,22 @@
 class Verb {
-  constructor(stamp, selection) {
+  constructor(stamp, selection, original, replacement) {
     this.stamp = stamp;
     this.selection = selection;
+    this.original = original;
+    this.replacement = replacement;
+  }
+
+  checkDrop(){
+    let o = this.original;
+    let r = this.replacement.tile;
+
+    if (o.gender === r.gender && o.number === r.number && o.person === r.person && o.tense === r.tense ) {
+      return true;
+    }
+    return false;
   }
 
   test() {
-
     switch (this.stamp) {
       case 'Make Third Person Singular':
         let word = '';

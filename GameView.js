@@ -159,14 +159,17 @@ class GameView extends Component {
         if (dropTest.checkDrop()) {
             original_word.title = zone.properties.word;
             original_word.id = zone.id;
-            if (!zone.properties.updated) {
+
+            if (zone.properties.updated) {
+              replacement_word.updated = true;
+            } else {
               replacement_word.update = true;
             }
         }
       }
     });
 
-    if (drop_successful && !replacement_word.update){
+    if (drop_successful && replacement_word.updated ){
       Alert.alert('That word has already been updated! Please try again.')
       this.props.updateSentence( { replacement_word } );
     } else if (drop_successful) {
@@ -351,7 +354,7 @@ const styles = StyleSheet.create({
     paddingRight: 3,
     textAlign: 'center',
     color: 'white',
-    fontSize: 20,
+    fontSize: 18,
   },
   sentencePOSStyles: {
     paddingBottom: 2,
@@ -364,10 +367,14 @@ const styles = StyleSheet.create({
    position: 'absolute',
    top: Dimensions.get('window').height - Dimensions.get('window').height * (6/16),
    width: Dimensions.get('window').width,
+   bottom: Dimensions.get('window').height -200,
+   height: 100,
    flex: 0,
    flexDirection: 'row',
    justifyContent: 'center',
    flexWrap: 'wrap',
+   alignContent: 'flex-end',
+   flexWrap: 'wrap-reverse',
   },
   tileButtonStyles: {
     backgroundColor: 'blue',
@@ -379,15 +386,16 @@ const styles = StyleSheet.create({
   },
   tileTextStyles: {
     padding: 5,
+    paddingBottom: 2,
     textAlign: 'center',
     color: 'white',
-    fontSize: 20,
+    fontSize: 18,
   },
   tilePOSStyles: {
     paddingBottom: 2,
     textAlign: 'center',
     color: 'white',
-    fontSize: 12,
+    fontSize: 14,
   },
   stampContainerStyle: {
     position: 'absolute',

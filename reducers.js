@@ -44,7 +44,6 @@ function initSentence(state, action){
     tiles : [ ...state.tiles ],
     stamps : [ ...state.stamps ],
   }
-
 }
 
 function loadTile(state, action){
@@ -63,7 +62,6 @@ function updateSent(state, action){
   let newSent = state.sentence;
   let newTiles = state.tiles;
 
-  // console.log("ACTION", action)
   if (action.wordIDs.replacement_word.update){
       newSent[action.wordIDs.original_word.id].word = action.wordIDs.replacement_word.tile.word;
       newSent[action.wordIDs.original_word.id].updated = true;

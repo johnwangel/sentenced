@@ -49,8 +49,17 @@ class AddSentence extends Component {
       ]).isRequired,
   }
 
-  _onPressButton() {
-    Alert.alert('You tapped the button!')
+  // _onPressButton() {
+  //   Alert.alert('You tapped the button!')
+  // }
+
+  _onLongPressButton() {
+    let o = this.props.sentenceProps;
+    let str = '';
+    for(var prop in o){
+      str = str + `${prop}: ${o[prop]}` + '\n';
+    }
+    Alert.alert(str)
   }
 
   setDropZoneValues(event){
@@ -78,9 +87,9 @@ class AddSentence extends Component {
         return 'conj';
       case 'interjection':
         return 'interj';
-      case 'pronoun_personal':
+      case 'pronoun':
         return 'pron';
-      case 'pronoun_other':
+      case 'pronoun':
         return 'pron';
       case 'punctuation':
         return;
@@ -105,8 +114,8 @@ class AddSentence extends Component {
     }
 
     return (
-      <View style={ styles.sentence } onPress={ this._onPressButton.bind(this) } onLayout={this.setDropZoneValues.bind(this)}>
-        <TouchableOpacity style={ sentenceButtonStyle }>
+      <View style={ styles.sentence } onLayout={this.setDropZoneValues.bind(this)}>
+        <TouchableOpacity style={ sentenceButtonStyle } onLongPress={ this._onLongPressButton.bind(this) }>
           <Text
             id={ this.props.key }
             style={ sentenceTextStyles }>
