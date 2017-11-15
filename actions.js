@@ -8,6 +8,7 @@ export const SWAP_TILE = 'SWAP_TILE'
 export const TILE_PRESSED = 'TILE_PRESSED'
 export const UPDATE_TILE = 'UPDATE_TILE'
 export const INIT_SENTENCE = 'INIT_SENTENCE'
+export const INIT_STORE = 'INIT_STORE'
 
 const RANDOM = 'http://localhost:3000/api/random';
 
@@ -37,4 +38,8 @@ export function updateTile( tile ){
 
 export function addSentence( sentence ){
   return { type: INIT_SENTENCE, sentence }
+}
+
+export function addStore( store ){
+  return { type: INIT_STORE, store }
 }

@@ -16,13 +16,17 @@ import {
   View,
 } from 'react-native';
 
+import { StackNavigator } from 'react-navigation';
+
 import { connect } from 'react-redux'
+import Canteen from './Commissary';
 import AddTile from './AddTile';
 import Sentence from './Sentence';
 import Stamp from './Stamp';
 
 import {  addTiles,
           addSentence,
+          addStore,
           updateSentence,
           replaceTile,
           swapTile,
@@ -36,6 +40,7 @@ import Parser from "./Parser"
 
 const RANDOM = 'http://localhost:3000/api/random';
 const SENTENCE = 'http://localhost:3000/api/sentence';
+const STORE = 'http://localhost:3000/api/store';
 
 class GameView extends Component {
   constructor(props) {
@@ -53,6 +58,12 @@ class GameView extends Component {
     .then(res => res.json())
     .then(new_sentence => {
       this.props.initSentence(new_sentence);
+    });
+
+    fetch(STORE)
+    .then(res => res.json())
+    .then(store => {
+      this.props.initStore(store);
     });
 
     this.state = {
@@ -218,6 +229,7 @@ class GameView extends Component {
   render() {
 
     const resizeMode = 'cover';
+    const navigate = this.props.nav.navigate;
 
     return (
 
@@ -238,12 +250,11 @@ class GameView extends Component {
             </TouchableOpacity>
             <TouchableOpacity style={ styles.menuButton }>
                   <Text
-                    onPress={ this._onPressCommissary.bind(this) }
+                    onPress={ () => navigate('Commissary', { stamps : this.props.stamps }) }
                     style={ styles.menuText }>
                     Commissary
                   </Text>
             </TouchableOpacity>
-
 
           </View>
 
@@ -433,6 +444,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     replaceTile: ( tiles ) => {
       dispatch( replaceTile( tiles ) );
+    },
+    initStore: ( store ) => {
+      dispatch( addStore( store ) );
     },
     initTiles: ( tile ) => {
       dispatch( addTiles( tile ) );

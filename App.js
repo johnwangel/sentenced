@@ -10,6 +10,7 @@ import {
 
 import { StackNavigator } from 'react-navigation';
 import GameView from './GameView';
+import Canteen from './Commissary';
 
 // react - redux binding
 import { Provider } from 'react-redux';
@@ -59,7 +60,22 @@ class GameScreen extends React.Component {
     return (
       <Provider store={store}>
         <View>
-          <GameView />
+          <GameView nav={ this.props.navigation } />
+        </View>
+      </Provider>
+    );
+  }
+};
+
+class Commissary extends React.Component {
+  static navigationOptions = {
+    title: 'Commissary',
+  };
+  render() {
+    return (
+      <Provider store={store}>
+        <View>
+          <Canteen/>
         </View>
       </Provider>
     );
@@ -97,5 +113,6 @@ const styles = StyleSheet.create({
 
 export default SentencedApp = StackNavigator({
   Home: { screen: HomeScreen },
-  Game: { screen: GameScreen }
+  Game: { screen: GameScreen },
+  Commissary: { screen: Commissary },
 });
