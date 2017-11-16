@@ -32,13 +32,15 @@ class CommissaryClass extends Component {
 
         <View>
           <Text style={ styles.tradeHead }>Store</Text>
-          { this.props.pos.map( (p, idx) => {
-              return <StoreComm
-                        key={ idx }
-                        partOfSpeech={ p.title }
-                        show={ p.show }
-                      ></StoreComm>
-          })}
+          <ScrollView style={ styles.tradeContainerStyle } >
+            { this.props.pos.map( (p, idx) => {
+                return <StoreComm
+                          key={ idx }
+                          partOfSpeech={ p.title }
+                          show={ p.show }
+                        ></StoreComm>
+            })}
+          </ScrollView>
           <Text style={ styles.tradeHead } >Stamp Inventory</Text>
           <ScrollView style={ styles.stampContainerStyle } >
             { this.props.stamps.map( (stamp, idx) => {
@@ -58,14 +60,15 @@ class CommissaryClass extends Component {
 const styles = StyleSheet.create({
   tradeHead: {
     color: 'white',
+    paddingTop: 5,
+    paddingBottom: 5,
     fontSize: Dimensions.get('window').height/40,
-    margin: 5,
     textAlign: 'center',
     backgroundColor: '#F75F48',
   },
   tradeContainerStyle: {
-    backgroundColor: 'blue',
-    paddingVertical: 20,
+    backgroundColor: 'white',
+    paddingVertical: 5,
     height: Dimensions.get('window').height/3,
     flex: 0,
     flexDirection: 'column',
@@ -73,7 +76,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   stampContainerStyle: {
-    backgroundColor: 'green',
+    backgroundColor: 'white',
     paddingVertical: 20,
     height: Dimensions.get('window').height/2,
     flex: 0,

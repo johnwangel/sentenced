@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import {
   Alert,
   Animated,
+  Dimensions,
   Image,
   PanResponder,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -14,6 +16,10 @@ import { connect } from 'react-redux'
 class StoreStamp extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      pressed: false,
+    };
   }
 
   static propTypes = {
@@ -30,33 +36,60 @@ class StoreStamp extends Component {
   }
 
   _onPressButton() {
-    Alert.alert(`YOU PRESSED ${this.props.stampProps.title}`)
+    this.state.pressed = !this.state.pressed;
+    this.forceUpdate();
   }
 
   render() {
-      const { stampTextStyles, stampButtonStyles } = this.props;
-      let stampStyle = {
-          flex: 0,
-          borderRadius: 4,
-          flexDirection: 'row',
-          justifyContent: 'space-evenly',
-          flexWrap: 'wrap',
-        };
+    let bc = 'white';
+    if (this.state.pressed) bc = 'gold';
+
+    let stampButtonStyles = {
+        height: 60,
+        marginLeft: 2,
+        borderWidth: 10,
+        borderColor: bc,
+        backgroundColor: 'blue',
+        flex: 0,
+        flexDirection: 'row',
+        justifyContent: 'center',
+      }
 
       return (
-          <View style={stampStyle}>
             <TouchableOpacity style={ stampButtonStyles }>
                   <Text
                     id={ this.props.key }
+                    style={ styles.value }>
+                    { this.props.stampProps.value }
+                  </Text>
+                  <Text
+                    id={ this.props.key }
                     onPress={ this._onPressButton.bind(this) }
-                    style={ stampTextStyles }>
+                    style={ styles.inventory }>
                     { this.props.stampProps.title }
                   </Text>
             </TouchableOpacity>
-          </View>
       );
   }
 }
+
+const styles = StyleSheet.create({
+  inventory: {
+   textAlign: 'center',
+   color: 'white',
+   padding: 10,
+   fontSize: 18,
+  },
+  value: {
+   textAlign: 'center',
+   color: 'blue',
+   backgroundColor: 'gold',
+   fontWeight: 'bold',
+   borderRadius: 10,
+   padding: 10,
+   fontSize: 18,
+  },
+});
 
 const mapStateToProps = (state) => {
   return { ...state };

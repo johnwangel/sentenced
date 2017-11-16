@@ -155,7 +155,7 @@ class AddTile extends Component {
       transform: [ {translateX}, {translateY}, {rotate}, {scale} ]
     };
 
-    let color = this.state.pressed ? 'yellow' : 'white';
+    let color = this.state.pressed ? 'gold' : 'white';
 
     let tileButtonStyle = {
       backgroundColor: 'blue',

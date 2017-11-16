@@ -4,6 +4,7 @@ import {
   Animated,
   Image,
   PanResponder,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -12,16 +13,11 @@ import {
 import { connect } from 'react-redux'
 
 class StampComm extends Component {
-    constructor(props) {
-
+  constructor(props) {
     super(props);
-
     this.state = {
-      pan: new Animated.ValueXY(),
-      scale: new Animated.Value(1),
-      showDraggable   : true,
-      dropZoneValues  : null,
-    };
+      pressed: false,
+    }
   }
 
   static propTypes = {
@@ -37,41 +33,44 @@ class StampComm extends Component {
     ]).isRequired,
   }
 
-  _onPressButton() {
-    this.props.stampCheck(this.props.stampProps);
-  }
-
-  _onPressButton() {
-    Alert.alert('You pressed the button.')
+  _onPress() {
+    this.state.pressed = !this.state.pressed;
+    this.forceUpdate();
   }
 
   render() {
-      const { stampTextStyles, stampButtonStyles } = this.props;
-      const resizeMode = 'contain';
 
-      let stampStyle = {
-          flex: 0,
-          borderRadius: 4,
-          flexDirection: 'row',
-          justifyContent: 'space-evenly',
-          flexWrap: 'wrap',
-        };
+    let bc = 'white';
+    if (this.state.pressed) bc = 'gold';
+
+    let currencyStamp = {
+        marginLeft: 10,
+        borderWidth: 5,
+        borderColor: bc,
+        backgroundColor: 'green',
+      }
 
       return (
-        <View style={stampStyle}>
-          <TouchableOpacity style={ stampButtonStyles }>
+          <TouchableOpacity style={ currencyStamp }>
                 <Text
                   id={ this.props.key }
-                  onPress={ this._onPressButton.bind(this) }
-                  style={ stampTextStyles }>
+                  onPress={ this._onPress.bind(this) }
+                  style={ styles.currencyText }>
                   { this.props.stampProps }
                 </Text>
           </TouchableOpacity>
-        </View>
       );
   }
-
 }
+
+const styles = StyleSheet.create({
+  currencyText: {
+   textAlign: 'left',
+   color: 'white',
+   padding: 5,
+   fontSize: 18,
+  },
+});
 
 const mapStateToProps = (state) => {
   return { ...state };
