@@ -13,16 +13,11 @@ import {
 } from 'react-native';
 
 import { connect } from 'react-redux'
-
-import StoreStamp from './StoreStamp';
+import { updatePOSPresses } from './actions'
 
 class StoreComm extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      pressed: false,
-    };
   }
 
   static propTypes = {
@@ -39,99 +34,78 @@ class StoreComm extends Component {
   }
 
   _onPress() {
-    this.state.pressed = !this.state.pressed;
+    this.props.updatePOSPresses({ id: this.props.index })
     this.forceUpdate();
   }
 
   render() {
       const { stampTextStyles, stampButtonStyles } = this.props;
-      let open_close = '+';
-      if (this.state.pressed) open_close = '-';
+
       let catStyle = {
           flex: 0,
-          borderRadius: 4,
-          flexDirection: 'column',
+          width: Dimensions.get('window').width/2,
+          // minWidth: '100%',
+          paddingLeft: 5,
+          paddingVertical: 3,
+          backgroundColor: this.props.backColor,
+          flexDirection: 'row',
           justifyContent: 'flex-start',
           flexWrap: 'wrap',
-        };
+        }
+
+        let categoryContainer = {
+          flex: 0,
+          flexDirection: 'row',
+        }
+
+        let categoryList = {
+           fontSize: Dimensions.get('window').height/45,
+           marginLeft: 2,
+           marginTop: 2,
+           flexDirection: 'column',
+           flexWrap: 'wrap',
+           // fontWeight: 'bold',
+           color: this.props.fontColor,
+        }
+
         let stampStyle = {
-            left: 0,
-            backgroundColor: 'green',
-            paddingVertical: 20,
-          }
+          left: 0,
+          backgroundColor: 'green',
+          paddingVertical: 20,
+        }
+
 
       return (
-        <View style={catStyle}>
-          <TouchableOpacity style={ styles.categoryContainer }>
-                <Text style={ styles.categoryList }>
-                  { open_close }
-                </Text>
+        <View style={ catStyle }>
+          <TouchableOpacity style={ categoryContainer }>
                 <Text
                   id={ this.props.key }
-                  style={ styles.categoryList }
+                  style={ categoryList }
                   onPress={ this._onPress.bind(this) }
                 >
                   { this.props.partOfSpeech }
                 </Text>
           </TouchableOpacity>
-          { this.state.pressed &&
-            <ScrollView
-                  horizontal={ true }
-                  style={ styles.scrollStyle }
-                >
-                { this.props.store.map( (stamp, idx) => {
-                  { if ( this.props.partOfSpeech === stamp.pos ) {
-                    return <StoreStamp
-                          key={ idx }
-                          stampProps={ stamp }
-                        ></StoreStamp>
-                  }}
-                })}
-            </ScrollView>
-          }
         </View>
       );
   }
 }
 
-const styles = StyleSheet.create({
-  categoryContainer: {
-    flex: 0,
-    flexDirection: 'row',
-  },
-  categoryList: {
-   fontSize: Dimensions.get('window').height/40,
-   marginLeft: 2,
-   marginTop: 2,
-   flexDirection: 'column',
-   flexWrap: 'wrap',
-  },
-  scrollStyle: {
-   marginLeft: 2,
-   marginTop: 2,
-   height: 70,
-   flex: 0,
-   flexDirection: 'row',
-   justifyContent: 'flex-start',
-   padding: 5,
-  },
-});
-
 const mapStateToProps = (state) => {
   return { ...state };
 }
 
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     addSentenceZone: (zone) => {
-//       dispatch(addSentenceZone(zone));
-//     }
-//   }
-// }
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updatePOSPresses: (posId) => {
+      dispatch(updatePOSPresses(posId));
+    }
+  }
+}
 
 StoreComm = connect(
-  mapStateToProps
-  // mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(StoreComm);
 
 export default StoreComm;

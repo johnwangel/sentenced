@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   Alert,
   Animated,
+  Dimensions,
   Image,
   PanResponder,
   StyleSheet,
@@ -45,9 +46,11 @@ class StampComm extends Component {
 
     let currencyStamp = {
         marginLeft: 10,
+        marginRight: 10,
         borderWidth: 5,
         borderColor: bc,
         backgroundColor: 'green',
+
       }
 
       return (

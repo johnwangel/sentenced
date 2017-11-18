@@ -7,6 +7,8 @@ import {
   UPDATE_TILE,
   INIT_SENTENCE,
   INIT_STORE,
+  UPDATE_PRESSES,
+  UPDATE_POS_PRESSES,
 } from './actions';
 
 let sentence = [];
@@ -31,6 +33,10 @@ const sentencedReducers = (state = { sentence, tiles, stamps, store, pos }, acti
       return initSentence(state, action)
     case INIT_STORE:
       return initStore(state, action)
+    case UPDATE_PRESSES:
+      return update_presses(state, action)
+    case UPDATE_POS_PRESSES:
+      return update_pos_presses(state, action)
     default:
       return state;
   }
@@ -188,367 +194,584 @@ function updateTile(state, action){
   }
 }
 
+function update_presses(state, action){
+  let new_store = state.store;
+
+  new_store.forEach( s => {
+    if ( s.id === action.storeID.id ) {
+      s.pressed = true;
+    } else {
+      s.pressed = false;
+    }
+  })
+
+  return {
+    sentence: [ ...state.sentence ],
+    tiles : [ ...state.tiles ],
+    stamps : [ ...state.stamps ],
+    store: [ ...new_store ],
+    pos: [...state.pos ],
+  }
+}
+
+
+function update_pos_presses(state, action){
+  let new_pos = state.pos;
+
+  console.log("ACTION POS ID ", action.posId)
+
+  new_pos.forEach( s => {
+    if (s.id === action.posId.id) {
+      s.pressed = true;
+    } else {
+      s.pressed = false;
+    }
+  })
+
+  return {
+    sentence: [ ...state.sentence ],
+    tiles : [ ...state.tiles ],
+    stamps : [ ...state.stamps ],
+    store: [ ...state.store ],
+    pos: [ ...new_pos ],
+  }
+}
+
 export default sentencedReducers;
 
 const pos = [
-    { title: 'adjective' },
-    { title: 'adverb' },
-    { title: 'article' },
-    { title: 'conjunction' },
-    { title: 'interjection' },
-    { title: 'noun' },
-    { title: 'preposition' },
-    { title: 'personal pronoun' },
-    { title: 'pronoun' },
-    { title: 'verb' },
+    { title: 'adjective', "id": 1, },
+    { title: 'adverb', "id": 2, },
+    { title: 'article', "id": 3, },
+    { title: 'conjunction', "id": 4, },
+    { title: 'interjection', "id": 5, },
+    { title: 'noun', "id": 6, },
+    { title: 'preposition', "id": 7, },
+    { title: 'personal pronoun', "id": 8, },
+    { title: 'pronoun', "id": 9, },
+    { title: 'verb', "id": 10, },
   ]
 
 let store = [
-      { "title": "Get noun",
+      {
+        "id": 0,
+        "title": "Get noun",
         "pos": "noun",
         "value": 5,
       },
-      { "title": "Make singular",
+      {
+        "id": 1,
+        "title": "Make singular",
         "pos": "noun",
         "value": 5,
       },
-      { "title": "Make plural",
+      {
+        "id": 2,
+        "title": "Make plural",
         "pos": "noun",
         "value": 5,
       },
-      { "title": "Get verb",
+      {
+        "id": 3,
+        "title": "Get verb",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make simple present tense",
+      {
+        "id": 4,
+        "title": "Make simple present tense",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make simple past tense",
+      {
+        "id": 5,
+        "title": "Make simple past tense",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make simple future tense",
+      {
+        "id": 6,
+        "title": "Make simple future tense",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make present continuous tense",
+      {
+        "id": 7,
+        "title": "Make present continuous tense",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make past continuous tense",
+      {
+        "id": 8,
+        "title": "Make past continuous tense",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make future continuous tense",
+      {
+        "id": 9,
+        "title": "Make future continuous tense",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make present perfect tense",
+      {
+        "id": 10,
+        "title": "Make present perfect tense",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make past perfect tense",
+      {
+        "id": 11,
+        "title": "Make past perfect tense",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make future perfect tense",
+      {
+        "id": 12,
+        "title": "Make future perfect tense",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make present perfect continuous tense",
+      {
+        "id": 13,
+        "title": "Make present perfect continuous tense",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make past perfect continuous tense",
+      {
+        "id": 14,
+        "title": "Make past perfect continuous tense",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make future perfect continuous tense",
+      {
+        "id": 15,
+        "title": "Make future perfect continuous tense",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Get active",
+      {
+        "id": 16,
+        "title": "Get active",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Get passive",
+      {
+        "id": 17,
+        "title": "Get passive",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make passive",
+      {
+        "id": 18,
+        "title": "Make passive",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make modal",
+      {
+        "id": 19,
+        "title": "Make modal",
         "pos": "verb",
         "value": 5,
       },
-      { "title": "Make comparative",
+      {
+        "id": 20,
+        "title": "Make comparative",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Make superlative",
+      {
+        "id": 21,
+        "title": "Make superlative",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: quantity",
+      {
+          "id": 22,
+           "title": "Get type: quantity",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: opinion",
+      {
+          "id": 23,
+           "title": "Get type: opinion",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: personality",
+      {
+        "id": 24,
+        "title": "Get type: personality",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: sound",
+      {
+        "id": 25,
+        "title": "Get type: sound",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: taste",
+      {
+        "id": 26,
+        "title": "Get type: taste",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: touch",
+      {
+        "id": 27,
+        "title": "Get type: touch",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: size",
+      {
+        "id": 28,
+        "title": "Get type: size",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: smell",
+      {
+        "id": 29,
+        "title": "Get type: smell",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: speed",
+      {
+        "id": 30,
+        "title": "Get type: speed",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: temperature",
+      {
+        "id": 31,
+        "title": "Get type: temperature",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: age",
+      {
+        "id": 32,
+        "title": "Get type: age",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: distance",
+      {
+        "id": 33,
+        "title": "Get type: distance",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: shape",
+      {
+        "id": 34,
+        "title": "Get type: shape",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: quality",
+      {
+        "id": 35,
+        "title": "Get type: quality",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: brightness",
+      {
+        "id": 36,
+        "title": "Get type: brightness",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: color",
+      {
+        "id": 37,
+        "title": "Get type: color",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: time",
+      {
+        "id": 38,
+        "title": "Get type: time",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: origin",
+      {
+        "id": 39,
+        "title": "Get type: origin",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: material",
+      {
+        "id": 40,
+        "title": "Get type: material",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: purpose",
+      {
+        "id": 41,
+        "title": "Get type: purpose",
         "pos": "adjective",
         "value": 5,
       },
-      { "title": "Get type: time",
+      {
+        "id": 42,
+        "title": "Get type: time",
         "pos": "adverb",
         "value": 5,
       },
-      { "title": "Get type: place",
+      {
+        "id": 43,
+        "title": "Get type: place",
         "pos": "adverb",
         "value": 5,
       },
-      { "title": "Get type: manner",
+      {
+          "id": 44,
+           "title": "Get type: manner",
         "pos": "adverb",
         "value": 5,
       },
-      { "title": "Get type: degree",
+      {
+        "id": 45,
+        "title": "Get type: degree",
         "pos": "adverb",
         "value": 5,
       },
-      { "title": "Get type: frequency",
+      {
+        "id": 46,
+        "title": "Get type: frequency",
         "pos": "adverb",
         "value": 5,
       },
-      { "title": "Make definite",
+      {
+        "id": 47,
+        "title": "Make definite",
         "pos": "article",
         "value": 5,
       },
-      { "title": "Get definite",
+      {
+        "id": 48,
+        "title": "Get definite",
         "pos": "article",
         "value": 5,
       },
-      { "title": "Make indefinite before vowel",
+      {
+        "id": 49,
+        "title": "Make indefinite before vowel",
         "pos": "article",
         "value": 5,
       },
-      { "title": "Make indefinite before consonant",
+      {
+        "id": 50,
+        "title": "Make indefinite before consonant",
         "pos": "article",
         "value": 5,
       },
-      { "title": "Get indefinite before vowel",
+      {
+        "id": 51,
+        "title": "Get indefinite before vowel",
         "pos": "article",
         "value": 5,
       },
-      { "title": "Get indefinite before consonant",
+      {
+        "id": 52,
+        "title": "Get indefinite before consonant",
         "pos": "article",
         "value": 5,
       },
-      { "title": "Make type: time",
+      {
+        "id": 53,
+        "title": "Make type: time",
         "pos": "preposition",
         "value": 5,
       },
-      { "title": "Make type: place",
+      {
+        "id": 54,
+        "title": "Make type: place",
         "pos": "preposition",
         "value": 5,
       },
-      { "title": "Make type: direction",
+      {
+        "id": 55,
+        "title": "Make type: direction",
         "pos": "preposition",
         "value": 5,
       },
-      { "title": "Make type: agent",
+      {
+        "id": 56,
+        "title": "Make type: agent",
         "pos": "preposition",
         "value": 5,
       },
-      { "title": "Make type: instrument",
+      {
+        "id": 57,
+        "title": "Make type: instrument",
         "pos": "preposition",
         "value": 5,
       },
-      { "title": "Get preposition",
+      {
+        "id": 58,
+        "title": "Get preposition",
         "pos": "preposition",
         "value": 5,
       },
-      { "title": "Make coordinating",
+      {
+        "id": 59,
+        "title": "Make coordinating",
         "value": 5,
         "pos": "conjunction",
       },
-      { "title": "Make subordinating",
+      {
+        "id": 60,
+        "title": "Make subordinating",
         "pos": "conjunction",
         "value": 5,
       },
-      { "title": "Make correlative",
+      {
+        "id": 61,
+        "title": "Make correlative",
         "pos": "conjunction",
         "value": 5,
       },
-      { "title": "Get coordinating",
+      {
+        "id": 62,
+        "title": "Get coordinating",
         "pos": "conjunction",
         "value": 5,
       },
-      { "title": "Get subordinating",
+      {
+        "id": 63,
+        "title": "Get subordinating",
         "pos": "conjunction",
         "value": 5,
       },
-      { "title": "Get correlative",
+      {
+        "id": 64,
+        "title": "Get correlative",
         "value": 5,
         "pos": "conjunction",
       },
-      { "title": "Make first person singular",
+      {
+        "id": 65,
+        "title": "Make first person singular",
         "pos": "pronoun",
         "value": 5,
       },
-      { "title": "Make second person singular",
+      {
+        "id": 66,
+        "title": "Make second person singular",
         "pos": "personal pronoun",
         "value": 5,
       },
-      { "title": "Make third person singular neuter",
+      {
+        "id": 67,
+        "title": "Make third person singular neuter",
         "pos": "personal pronoun",
         "value": 5,
       },
-      { "title": "Make third person singular masculine",
+      {
+        "id": 68,
+        "title": "Make third person singular masculine",
         "pos": "personal pronoun",
         "value": 5,
       },
-      { "title": "Make third person singular feminine",
+      {
+        "id": 69,
+        "title": "Make third person singular feminine",
         "pos": "personal pronoun",
         "value": 5,
       },
-      { "title": "Make first person plural",
+      {
+        "id": 70,
+        "title": "Make first person plural",
         "pos": "personal pronoun",
         "value": 5,
       },
-      { "title": "Make second person plural",
+      {
+        "id": 71,
+        "title": "Make second person plural",
         "pos": "personal pronoun",
         "value": 5,
       },
-      { "title": "Make third person plural",
+      {
+        "id": 72,
+        "title": "Make third person plural",
         "pos": "personal pronoun",
         "value": 5,
       },
-      { "title": "Make objective",
+      {
+        "id": 73,
+        "title": "Make objective",
         "pos": "personal pronoun",
         "value": 5,
       },
-      { "title": "Make subjective",
+      {
+        "id": 74,
+        "title": "Make subjective",
         "pos": "personal pronoun",
         "value": 5,
       },
-      { "title": "Make possessive attributive",
+      {
+        "id": 75,
+        "title": "Make possessive attributive",
         "pos": "personal pronoun",
         "value": 5,
       },
-      { "title": "Make possessive predicative",
+      {
+        "id": 76,
+        "title": "Make possessive predicative",
         "pos": "personal pronoun",
         "value": 5,
       },
-      { "title": "Make reflexive",
+      {
+        "id": 77,
+        "title": "Make reflexive",
         "pos": "personal pronoun",
         "value": 5,
       },
-      { "title": "Make indefinite",
+      {
+        "id": 78,
+        "title": "Make indefinite",
         "pos": "pronoun",
         "value": 5,
       },
-      { "title": "Make relative",
+      {
+        "id": 79,
+        "title": "Make relative",
         "pos": "pronoun",
         "value": 5,
       },
-      { "title": "Make demonstrative",
+      {
+        "id": 80,
+        "title": "Make demonstrative",
         "pos": "pronoun",
         "value": 5,
       },
-      { "title": "Make interrogative",
+      {
+        "id": 81,
+        "title": "Make interrogative",
         "pos": "pronoun",
         "value": 5,
       },
-      { "title": "Get indefinite",
+      {
+        "id": 82,
+        "title": "Get indefinite",
         "pos": "pronoun",
         "value": 5,
       },
-      { "title": "Get relative",
+      {
+        "id": 83,
+        "title": "Get relative",
         "pos": "pronoun",
         "value": 5,
       },
-      { "title": "Get demonstrative",
+      {
+        "id": 84,
+        "title": "Get demonstrative",
         "pos": "pronoun",
         "value": 5,
       },
-      { "title": "Get interrogative",
+      {
+        "id": 85,
+        "title": "Get interrogative",
         "pos": "pronoun",
         "value": 5,
       },
-      { "title": "Get interjection",
+      {
+        "id": 86,
+        "title": "Get interjection",
         "pos": "interjection",
         "value": 5,
       }

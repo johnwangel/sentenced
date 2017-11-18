@@ -9,6 +9,9 @@ export const TILE_PRESSED = 'TILE_PRESSED'
 export const UPDATE_TILE = 'UPDATE_TILE'
 export const INIT_SENTENCE = 'INIT_SENTENCE'
 export const INIT_STORE = 'INIT_STORE'
+export const UPDATE_PRESSES = 'UPDATE_PRESSES'
+export const UPDATE_POS_PRESSES = 'UPDATE_POS_PRESSES'
+
 
 const RANDOM = 'http://localhost:3000/api/random';
 
@@ -42,4 +45,12 @@ export function addSentence( sentence ){
 
 export function addStore( store ){
   return { type: INIT_STORE, store }
+}
+
+export function updatePresses( storeID ){
+  return { type: UPDATE_PRESSES, storeID }
+}
+
+export function updatePOSPresses( posId ){
+  return { type: UPDATE_POS_PRESSES, posId }
 }

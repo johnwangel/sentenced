@@ -12,14 +12,11 @@ import {
 } from 'react-native';
 
 import { connect } from 'react-redux'
+import { updatePresses } from './actions'
 
 class StoreStamp extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      pressed: false,
-    };
   }
 
   static propTypes = {
@@ -36,20 +33,21 @@ class StoreStamp extends Component {
   }
 
   _onPressButton() {
-    this.state.pressed = !this.state.pressed;
+    this.props.updatePresses({ id: this.props.stampProps.id })
     this.forceUpdate();
   }
 
   render() {
-    let bc = 'white';
-    if (this.state.pressed) bc = 'gold';
+    let bc = 'blue';
+    if (this.props.stampProps.pressed) bc = 'gold';
 
     let stampButtonStyles = {
         height: 60,
         marginLeft: 2,
         borderWidth: 10,
         borderColor: bc,
-        backgroundColor: 'blue',
+        borderRadius: 15,
+        backgroundColor: 'red',
         flex: 0,
         flexDirection: 'row',
         justifyContent: 'center',
@@ -57,17 +55,17 @@ class StoreStamp extends Component {
 
       return (
             <TouchableOpacity style={ stampButtonStyles }>
-                  <Text
-                    id={ this.props.key }
-                    style={ styles.value }>
-                    { this.props.stampProps.value }
-                  </Text>
-                  <Text
-                    id={ this.props.key }
-                    onPress={ this._onPressButton.bind(this) }
-                    style={ styles.inventory }>
-                    { this.props.stampProps.title }
-                  </Text>
+                    <Text
+                      id={ this.props.key }
+                      style={ styles.value }>
+                      { this.props.stampProps.value }
+                    </Text>
+                    <Text
+                      id={ this.props.key }
+                      onPress={ this._onPressButton.bind(this) }
+                      style={ styles.inventory }>
+                      { this.props.stampProps.title }
+                    </Text>
             </TouchableOpacity>
       );
   }
@@ -79,15 +77,21 @@ const styles = StyleSheet.create({
    color: 'white',
    padding: 10,
    fontSize: 18,
+   borderRadius: 20,
+   overflow: 'hidden',
   },
   value: {
    textAlign: 'center',
    color: 'blue',
    backgroundColor: 'gold',
    fontWeight: 'bold',
-   borderRadius: 10,
-   padding: 10,
+   paddingHorizontal: 10,
+   paddingBottom: 10,
+   paddingTop: 3,
    fontSize: 18,
+   borderRadius: 15,
+   margin: 5,
+   overflow: 'hidden',
   },
 });
 
@@ -95,8 +99,17 @@ const mapStateToProps = (state) => {
   return { ...state };
 }
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updatePresses: (pressID) => {
+      dispatch(updatePresses(pressID));
+    }
+  }
+}
+
 StoreStamp = connect(
-  mapStateToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(StoreStamp);
 
 export default StoreStamp;
