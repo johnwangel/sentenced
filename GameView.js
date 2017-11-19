@@ -290,7 +290,7 @@ class GameView extends Component {
             { this.props.stamps.map( (stamp, idx) => {
                 return <Stamp
                           key={ idx }
-                          stampProps={ stamp }
+                          stampProps={ stamp.title }
                           stampButtonStyles={ styles.stampButtonStyles }
                           stampTextStyles={ styles.stampTextStyles }
                           stampCheck={ this.checkStamp }

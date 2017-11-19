@@ -11,7 +11,7 @@ export const INIT_SENTENCE = 'INIT_SENTENCE'
 export const INIT_STORE = 'INIT_STORE'
 export const UPDATE_PRESSES = 'UPDATE_PRESSES'
 export const UPDATE_POS_PRESSES = 'UPDATE_POS_PRESSES'
-
+export const UPDATE_STAMP_PRESSES = 'UPDATE_STAMP_PRESSES'
 
 const RANDOM = 'http://localhost:3000/api/random';
 
@@ -53,4 +53,8 @@ export function updatePresses( storeID ){
 
 export function updatePOSPresses( posId ){
   return { type: UPDATE_POS_PRESSES, posId }
+}
+
+export function updateStampPresses( stampID ) {
+  return { type: UPDATE_STAMP_PRESSES, stampID }
 }

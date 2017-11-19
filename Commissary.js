@@ -29,9 +29,15 @@ class CommissaryClass extends Component {
 
   render() {
     let backcolor = 'white';
-    if (this.props.pos.pressed) {
-        backcolor = 'blue';
-    }
+    if (this.props.pos.pressed) backcolor = 'blue';
+
+    let stmps = this.props.stamps
+    let tillCount = 0;
+    stmps.forEach( val => {
+      if (val.pressed) tillCount++;
+    })
+
+    console.log("TILL COUNT ", tillCount)
 
     let scrollStyle = {
        marginLeft: 2,
@@ -88,12 +94,22 @@ class CommissaryClass extends Component {
               })
           }
           </View>
-          <Text style={ styles.tradeHead } >My Book</Text>
+          <View style={ styles.bookContainer} >
+            <Text style={ styles.tradeHead } >My Book</Text>
+            <View style={ styles.bookContainer} >
+              <Text style={ styles.stampsHead }>Till:</Text>
+              <Text style={ styles.stampsHead }> { tillCount } </Text>
+            </View>
+          </View>
           <ScrollView style={ styles.stampContainerStyle } >
             { this.props.stamps.map( (stamp, idx) => {
+                let col = 'white';
+                if (stamp.pressed) col = 'gold';
                 return <StampComm
                           key={ idx }
-                          stampProps={ stamp }
+                          stampProps={ stamp.title }
+                          id={ stamp.id }
+                          bc={ col }
                           stampButtonStyles={ styles.stampButtonStyles }
                           stampTextStyles={ styles.stampTextStyles }
                         ></StampComm>
@@ -140,6 +156,23 @@ const styles = StyleSheet.create({
     fontSize: Dimensions.get('window').height/40,
     textAlign: 'left',
     backgroundColor: 'gold',
+  },
+  bookContainer: {
+    flex: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    backgroundColor: '#F75F48',
+  },
+  stampsHead: {
+    color: 'white',
+    paddingTop: 5,
+    paddingBottom: 5,
+    fontSize: Dimensions.get('window').height/40,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    backgroundColor: '#F75F48',
   },
   stampContainerStyle: {
     backgroundColor: 'white',

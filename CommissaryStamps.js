@@ -12,13 +12,12 @@ import {
 } from 'react-native';
 
 import { connect } from 'react-redux'
+import { updateStampPresses } from './actions'
 
 class StampComm extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      pressed: false,
-    }
+    this.state = { pressed: false }
   }
 
   static propTypes = {
@@ -36,21 +35,17 @@ class StampComm extends Component {
 
   _onPress() {
     this.state.pressed = !this.state.pressed;
+    this.props.updateStampPresses({ id: this.props.id, pressed: this.state.pressed })
     this.forceUpdate();
   }
 
   render() {
-
-    let bc = 'white';
-    if (this.state.pressed) bc = 'gold';
-
     let currencyStamp = {
         marginLeft: 10,
         marginRight: 10,
         borderWidth: 5,
-        borderColor: bc,
+        borderColor: this.props.bc,
         backgroundColor: 'green',
-
       }
 
       return (
@@ -79,17 +74,17 @@ const mapStateToProps = (state) => {
   return { ...state };
 }
 
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     addSentenceZone: (zone) => {
-//       dispatch(addSentenceZone(zone));
-//     }
-//   }
-// }
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updateStampPresses: ( stampId ) => {
+      dispatch(updateStampPresses( stampId ));
+    }
+  }
+}
 
 StampComm = connect(
-  mapStateToProps
-  // mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(StampComm);
 
 export default StampComm;

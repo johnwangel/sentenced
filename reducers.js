@@ -9,11 +9,11 @@ import {
   INIT_STORE,
   UPDATE_PRESSES,
   UPDATE_POS_PRESSES,
+  UPDATE_STAMP_PRESSES,
 } from './actions';
 
 let sentence = [];
 let tiles = [];
-let stamps = [ 'Make Third Person Singular', 'Make Plural', 'Make Singular', 'Make First Person', 'Make Past Tense', 'Make Future Tense', 'Make Future Perfect Tense', 'Make Past Perfect Tense' ];
 
 const sentencedReducers = (state = { sentence, tiles, stamps, store, pos }, action) => {
   switch (action.type) {
@@ -37,6 +37,8 @@ const sentencedReducers = (state = { sentence, tiles, stamps, store, pos }, acti
       return update_presses(state, action)
     case UPDATE_POS_PRESSES:
       return update_pos_presses(state, action)
+    case UPDATE_STAMP_PRESSES:
+      return update_stamp_presses(state, action)
     default:
       return state;
   }
@@ -218,8 +220,6 @@ function update_presses(state, action){
 function update_pos_presses(state, action){
   let new_pos = state.pos;
 
-  console.log("ACTION POS ID ", action.posId)
-
   new_pos.forEach( s => {
     if (s.id === action.posId.id) {
       s.pressed = true;
@@ -237,7 +237,38 @@ function update_pos_presses(state, action){
   }
 }
 
+function update_stamp_presses(state, action){
+  let new_stamps = state.stamps;
+
+  new_stamps.forEach( s => {
+    if (s.id === action.stampID.id) {
+      s.pressed = action.stampID.pressed;
+    }
+  })
+
+  return {
+    sentence: [ ...state.sentence ],
+    tiles : [ ...state.tiles ],
+    stamps : [ ...new_stamps ],
+    store: [ ...state.store ],
+    pos: [ ...state.pos ],
+  }
+
+}
+
 export default sentencedReducers;
+
+let stamps = [
+    { title: 'Make Third Person Singular', "id": 1, },
+    { title: 'Make Plural', "id": 2, },
+    { title: 'Make Singular', "id": 3, },
+    { title: 'Make First Person', "id": 4, },
+    { title: 'Make Past Tense', "id": 5, },
+    { title: 'Make Future Tense', "id": 6, },
+    { title: 'Make Future Perfect Tense', "id": 7, },
+    { title: 'Make Past Perfect Tense', "id": 8, }
+  ]
+
 
 const pos = [
     { title: 'adjective', "id": 1, },
@@ -258,6 +289,7 @@ let store = [
         "title": "Get noun",
         "pos": "noun",
         "value": 5,
+        "description": "blah blah blah",
       },
       {
         "id": 1,
