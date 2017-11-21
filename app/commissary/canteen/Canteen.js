@@ -12,9 +12,9 @@ import {
 } from 'react-native';
 
 import { connect } from 'react-redux'
-import { updatePresses } from './actions'
+import { updateCanteenPresses } from './actions'
 
-class StoreStamp extends Component {
+class Canteen extends Component {
   constructor(props) {
     super(props);
   }
@@ -33,13 +33,13 @@ class StoreStamp extends Component {
   }
 
   _onPressButton() {
-    this.props.updatePresses({ id: this.props.stampProps.id })
+    this.props.updateCanteenPresses({ id: this.props.itemProps.id })
     this.forceUpdate();
   }
 
   render() {
     let bc = 'blue';
-    if (this.props.stampProps.pressed) bc = 'gold';
+    if (this.props.itemProps.pressed) bc = 'gold';
 
     let stampButtonStyles = {
         height: 60,
@@ -58,13 +58,13 @@ class StoreStamp extends Component {
                     <Text
                       id={ this.props.key }
                       style={ styles.value }>
-                      { this.props.stampProps.value }
+                      { this.props.itemProps.value }
                     </Text>
                     <Text
                       id={ this.props.key }
                       onPress={ this._onPressButton.bind(this) }
                       style={ styles.inventory }>
-                      { this.props.stampProps.title }
+                      { this.props.itemProps.title }
                     </Text>
             </TouchableOpacity>
       );
@@ -101,15 +101,15 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updatePresses: (pressID) => {
-      dispatch(updatePresses(pressID));
+    updateCanteenPresses: (pressID) => {
+      dispatch(updateCanteenPresses(pressID));
     }
   }
 }
 
-StoreStamp = connect(
+Canteen = connect(
   mapStateToProps,
   mapDispatchToProps
-)(StoreStamp);
+)(Canteen);
 
-export default StoreStamp;
+export default Canteen;

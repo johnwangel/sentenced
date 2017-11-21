@@ -17,9 +17,9 @@ import {
 
 import { connect } from 'react-redux'
 
-import StampComm from './CommissaryStamps';
-import StoreComm from './CommissaryStore';
-import StoreStamp from './StoreStamp';
+import Book from './book/Book';
+import Category from './categories/Category';
+import Canteen from './canteen/Canteen';
 
 class CommissaryClass extends Component {
 
@@ -28,16 +28,18 @@ class CommissaryClass extends Component {
   }
 
   render() {
-    let backcolor = 'white';
-    if (this.props.pos.pressed) backcolor = 'blue';
+    let canteen = this.props.canteen.canteen;
+    let category = this.props.categories.categories;
+    let book = this.props.stamps.stamps
 
-    let stmps = this.props.stamps
+    let backcolor = 'white';
+    if (category.pressed) backcolor = 'blue';
+
+    let stmps = this.props.stamps.stamps
     let tillCount = 0;
     stmps.forEach( val => {
       if (val.pressed) tillCount++;
     })
-
-    console.log("TILL COUNT ", tillCount)
 
     let scrollStyle = {
        marginLeft: 2,
@@ -55,37 +57,37 @@ class CommissaryClass extends Component {
         <View style={ styles.commissaryContainer }>
           <Text style={ styles.tradeHead }>Store</Text>
           <View style={ styles.tradeContainerStyle } >
-            { this.props.pos.map( (p, idx) => {
+            { category.map( (cat, idx) => {
                 let fontColor= 'blue';
                 let backColor= 'white';
-                if (p.pressed){
+                if (cat.pressed){
                   fontColor = 'white';
                   backColor = 'blue';
                 }
-                return <StoreComm
+                return <Category
                           key={ idx }
-                          partOfSpeech={ p.title }
-                          pressed={ p.pressed }
-                          index={ p.id }
+                          partOfSpeech={ cat.title }
+                          pressed={ cat.pressed }
+                          index={ cat.id }
                           fontColor={ fontColor }
                           backColor={ backColor }
-                        ></StoreComm>
+                        ></Category>
             })}
-            { this.props.pos.map( p => {
-                if (p.pressed){
-                    let ttl = 'Trades for ' + p.title + 's'
+            { category.map( cat => {
+                if (cat.pressed){
+                    let ttl = 'Trades for ' + cat.title + 's'
                     return <View style={ styles.posView }>
                               <Text style={ styles.posHead }>{ ttl }</Text>
                               <ScrollView
                                     horizontal={ true }
                                     style={ scrollStyle }
                                   >
-                                  { this.props.store.map( (stamp, idx) => {
-                                    if ( p.title === stamp.pos ) {
-                                      return <StoreStamp
+                                  { canteen.map( (item, idx) => {
+                                    if ( cat.title === item.pos ) {
+                                      return <Canteen
                                             key={ idx }
-                                            stampProps={ stamp }
-                                          ></StoreStamp>
+                                            itemProps={ item }
+                                          ></Canteen>
                                    }}
                                   )}
                             </ScrollView>
@@ -102,17 +104,17 @@ class CommissaryClass extends Component {
             </View>
           </View>
           <ScrollView style={ styles.stampContainerStyle } >
-            { this.props.stamps.map( (stamp, idx) => {
+            { book.map( (stamp, idx) => {
                 let col = 'white';
                 if (stamp.pressed) col = 'gold';
-                return <StampComm
+                return <Book
                           key={ idx }
                           stampProps={ stamp.title }
                           id={ stamp.id }
                           bc={ col }
                           stampButtonStyles={ styles.stampButtonStyles }
                           stampTextStyles={ styles.stampTextStyles }
-                        ></StampComm>
+                        ></Book>
             })}
           </ScrollView>
         </View>

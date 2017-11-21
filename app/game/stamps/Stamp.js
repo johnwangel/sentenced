@@ -72,7 +72,7 @@ class Stamp extends Component {
                 height: '100%',
                 justifyContent: 'center',
               }}
-              source={require('./img/stamp.png')}>
+              source={require('../../img/stamp.png')}>
 
                 <Text
                   id={ this.props.key }

@@ -9,24 +9,39 @@ import {
 } from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
-import GameView from './GameView';
-import Canteen from './Commissary';
+import GameView from './app/game/GameView';
+import Canteen from './app/commissary/Commissary';
+import ActiveGames from './app/home/ActiveGames';
 
 // react - redux binding
 import { Provider } from 'react-redux';
 
 // our reducer
-import sentencedReducers from './reducers';
+import activeGameReducers from './app/home/reducers';
+import sentenceReducers from './app/game/sentence/reducers';
+import stampReducers from './app/game/stamps/reducers';
+import tileReducers from './app/game/tiles/reducers';
+import categoryReducers from './app/commissary/categories/reducers';
+import canteenReducers from './app/commissary/canteen/reducers';
 
 // create a redux store for our application
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 
-const store = createStore(
-    sentencedReducers,
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-);
+const reducers = combineReducers({
+  gameList: activeGameReducers,
+  sentence: sentenceReducers,
+  stamps: stampReducers,
+  tiles: tileReducers,
+  categories: categoryReducers,
+  canteen: canteenReducers,
+})
+
+const store = createStore(reducers);
 
 class HomeScreen extends Component {
+  constructor(props) {
+    super(props);
+  }
   static navigationOptions = {
     title: 'Home',
   };
@@ -46,6 +61,8 @@ class HomeScreen extends Component {
                 New Game
             </Text>
           </TouchableOpacity>
+          <Text style= {styles.subtitle}>GAMES</Text>
+          <ActiveGames></ActiveGames>
         </View>
       </Provider>
     );
@@ -55,7 +72,9 @@ class HomeScreen extends Component {
 class GameScreen extends React.Component {
   static navigationOptions = {
     title: 'Sentenced',
+    gesturesEnabled: false,
   };
+
   render() {
     return (
       <Provider store={store}>
@@ -93,6 +112,13 @@ const styles = StyleSheet.create({
     marginTop: 100,
     textAlign: 'center',
     fontSize: 56,
+    color: '#F75F48',
+    fontWeight: '900',
+  },
+  subtitle: {
+    marginTop: 100,
+    textAlign: 'center',
+    fontSize: 32,
     color: '#F75F48',
     fontWeight: '900',
   },

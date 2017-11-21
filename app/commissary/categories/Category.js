@@ -13,9 +13,9 @@ import {
 } from 'react-native';
 
 import { connect } from 'react-redux'
-import { updatePOSPresses } from './actions'
+import { updateCatPresses } from './actions'
 
-class StoreComm extends Component {
+class Category extends Component {
   constructor(props) {
     super(props);
   }
@@ -34,7 +34,7 @@ class StoreComm extends Component {
   }
 
   _onPress() {
-    this.props.updatePOSPresses({ id: this.props.index })
+    this.props.updateCatPresses({ id: this.props.index })
     this.forceUpdate();
   }
 
@@ -97,15 +97,15 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updatePOSPresses: (posId) => {
-      dispatch(updatePOSPresses(posId));
+    updateCatPresses: (posId) => {
+      dispatch(updateCatPresses(posId));
     }
   }
 }
 
-StoreComm = connect(
+Category = connect(
   mapStateToProps,
   mapDispatchToProps
-)(StoreComm);
+)(Category);
 
-export default StoreComm;
+export default Category;

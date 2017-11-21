@@ -12,9 +12,9 @@ import {
 } from 'react-native';
 
 import { connect } from 'react-redux'
-import { updateStampPresses } from './actions'
+import { updateStampPresses } from '../../game/stamps/actions'
 
-class StampComm extends Component {
+class Book extends Component {
   constructor(props) {
     super(props);
     this.state = { pressed: false }
@@ -82,9 +82,9 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-StampComm = connect(
+Book = connect(
   mapStateToProps,
   mapDispatchToProps
-)(StampComm);
+)(Book);
 
-export default StampComm;
+export default Book;

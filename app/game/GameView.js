@@ -19,24 +19,26 @@ import {
 import { StackNavigator } from 'react-navigation';
 
 import { connect } from 'react-redux'
-import Canteen from './Commissary';
-import AddTile from './AddTile';
-import Sentence from './Sentence';
-import Stamp from './Stamp';
+import Canteen from '../commissary/Commissary';
+import AddTile from './tiles/AddTile';
+import Sentence from './sentence/Sentence';
+import Stamp from './stamps/Stamp';
+
+import {
+          addSentence,
+          updateSentence,
+        } from './sentence/actions'
 
 import {  addTiles,
-          addSentence,
-          addStore,
-          updateSentence,
           replaceTile,
           swapTile,
           updateTile,
-        } from './actions'
+        } from './tiles/actions'
 
-import Drop from "./Drop"
-import Noun from "./Nouns"
-import CheckStamp from "./CheckStamp"
-import Parser from "./Parser"
+import Drop from "./helpers/Drop"
+import Noun from "./helpers/Nouns"
+import CheckStamp from "./helpers/CheckStamp"
+import Parser from "./helpers/Parser"
 
 const RANDOM = 'http://localhost:3000/api/random';
 const SENTENCE = 'http://localhost:3000/api/sentence';
@@ -85,9 +87,15 @@ class GameView extends Component {
     ]).isRequired,
   }
 
+  _handleBackPress() {
+    console.log("BACK PRESS PUSHED", this.props.navigator)
+    // this.props.navigator.pop();
+    // console.log("AFTER ", this.props.navigator)
+  }
+
   _onPressSwap() {
-    if (this.props.tiles.every( tile => !tile.pressed )) return Alert.alert("No tiles were selected. Select one or more tiles and try again.");
-    this.props.tiles.forEach( tile => {
+    if (this.props.tiles.tiles.every( tile => !tile.pressed )) return Alert.alert("No tiles were selected. Select one or more tiles and try again.");
+    this.props.tiles.tiles.forEach( tile => {
       if (tile.show && tile.pressed ) this.swap( tile )
     });
   }
@@ -101,7 +109,7 @@ class GameView extends Component {
   }
 
   checkStamp = (stamp) => {
-    let total = this.props.tiles.reduce( (sum, tile) => {
+    let total = this.props.tiles.tiles.reduce( (sum, tile) => {
         if (tile.show === true && tile.pressed) {
           return ++sum;
         } else {
@@ -114,7 +122,7 @@ class GameView extends Component {
     } else if (total > 1) {
       Alert.alert(`You have more than one tile selected. Select one tile, then try again.`)
     } else {
-      let selection = this.props.tiles.filter( tile => {
+      let selection = this.props.tiles.tiles.filter( tile => {
         if (tile.show && tile.pressed) {
           return tile;
         }
@@ -143,6 +151,9 @@ class GameView extends Component {
     let original_word = {};
     replacement_word.update = false;
     drop_successful = false;
+
+    let new_word = {};
+    Object.assign(new_word, replacement_word.tile)
 
     let sentenceContainerStart = Dimensions.get('window').height - (Dimensions.get('window').height * (5/8));
     let navBarTop = Platform.OS === 'ios' ? 64 : 56;
@@ -182,16 +193,16 @@ class GameView extends Component {
 
     if (drop_successful && replacement_word.updated ){
       Alert.alert('That word has already been updated! Please try again.')
-      this.props.updateSentence( { replacement_word } );
+      this.props.replaceTile( { replacement_word, new_word } );
     } else if (drop_successful) {
-      let new_word = '';
       fetch(RANDOM)
       .then((response) => response.json())
       .then((word) => {
         new_word = word;
         if (replacement_word.update){
           Alert.alert('Congratulations! Your grammar is correct.')
-          this.props.updateSentence( { original_word, replacement_word, new_word } );
+          this.props.updateSentence( { original_word, replacement_word } );
+          this.props.replaceTile( { replacement_word, new_word } );
         } else {
           Alert.alert('Sorry the grammar does not match. You will lose the tile and a new tile will be selected.')
           this.props.replaceTile( { replacement_word, new_word } );
@@ -199,7 +210,7 @@ class GameView extends Component {
       })
     } else {
       // Alert.alert('Invalid drop. Pleast try again!')
-      this.props.updateSentence( { replacement_word } );
+      this.props.replaceTile( { replacement_word, new_word } );
     }
     this.forceUpdate();
   }
@@ -227,6 +238,9 @@ class GameView extends Component {
   }
 
   render() {
+    sentence = this.props.sentence.sentence;
+    stamps = this.props.stamps.stamps;
+    tiles = this.props.tiles.tiles;
 
     const resizeMode = 'cover';
     const navigate = this.props.nav.navigate;
@@ -236,7 +250,7 @@ class GameView extends Component {
         <View style={styles.gameContainer} onLayout={this.setDropZoneValues}>
           <Image
             style={ { flex: 1, resizeMode, width: null, height: null } }
-            source={require('./img/jail.jpg')}
+            source={require('../img/jail.jpg')}
           >
 
           <View style={styles.menu}>
@@ -250,7 +264,7 @@ class GameView extends Component {
             </TouchableOpacity>
             <TouchableOpacity style={ styles.menuButton }>
                   <Text
-                    onPress={ () => navigate('Commissary', { stamps : this.props.stamps }) }
+                    onPress={ () => navigate('Commissary', { stamps }) }
                     style={ styles.menuText }>
                     Commissary
                   </Text>
@@ -259,7 +273,7 @@ class GameView extends Component {
           </View>
 
           <View style={ styles.sentenceContainer }>
-            { this.props.sentence.map( (word, idx) => {
+            { sentence.map( (word, idx) => {
                 return  <Sentence
                           key={ idx }
                           id={ idx }
@@ -272,7 +286,7 @@ class GameView extends Component {
             })}
           </View>
           <View style={ styles.tileContainer }>
-            { this.props.tiles.map( (tile, idx) => {
+            { tiles.map( (tile, idx) => {
                 { if (tile.show) {
                   return <AddTile
                           key={ idx }
@@ -287,7 +301,7 @@ class GameView extends Component {
             })}
           </View>
           <ScrollView horizontal={ true } style={ styles.stampContainerStyle }>
-            { this.props.stamps.map( (stamp, idx) => {
+            { stamps.map( (stamp, idx) => {
                 return <Stamp
                           key={ idx }
                           stampProps={ stamp.title }
@@ -439,26 +453,26 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    initSentence: ( sentence ) => {
+      dispatch( addSentence( sentence ) );
+    },
     updateSentence: ( changeIDs ) => {
       dispatch( updateSentence( changeIDs ) );
-    },
-    replaceTile: ( tiles ) => {
-      dispatch( replaceTile( tiles ) );
-    },
-    initStore: ( store ) => {
-      dispatch( addStore( store ) );
     },
     initTiles: ( tile ) => {
       dispatch( addTiles( tile ) );
     },
-    initSentence: ( sentence ) => {
-      dispatch( addSentence( sentence ) );
+    replaceTile: ( tiles ) => {
+      dispatch( replaceTile( tiles ) );
+    },
+    updateTile: (tile) => {
+      dispatch( updateTile(tile) );
     },
     swapTiles: (tiles) => {
       dispatch( swapTile(tiles) );
     },
-    updateTile: (tile) => {
-      dispatch( updateTile(tile) );
+    initStore: ( store ) => {
+      dispatch( addStore( store ) );
     },
   }
 }
