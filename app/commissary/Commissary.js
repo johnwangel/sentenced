@@ -56,23 +56,6 @@ class CommissaryClass extends Component {
 
         <View style={ styles.commissaryContainer }>
           <Text style={ styles.tradeHead }>Store</Text>
-          <View style={ styles.tradeContainerStyle } >
-            { category.map( (cat, idx) => {
-                let fontColor= 'blue';
-                let backColor= 'white';
-                if (cat.pressed){
-                  fontColor = 'white';
-                  backColor = 'blue';
-                }
-                return <Category
-                          key={ idx }
-                          partOfSpeech={ cat.title }
-                          pressed={ cat.pressed }
-                          index={ cat.id }
-                          fontColor={ fontColor }
-                          backColor={ backColor }
-                        ></Category>
-            })}
             { category.map( cat => {
                 if (cat.pressed){
                     let ttl = 'Trades for ' + cat.title + 's'
@@ -95,6 +78,23 @@ class CommissaryClass extends Component {
                 }
               })
           }
+          <View style={ styles.tradeContainerStyle } >
+            { category.map( (cat, idx) => {
+                let fontColor= 'blue';
+                let backColor= 'white';
+                if (cat.pressed){
+                  fontColor = 'white';
+                  backColor = 'blue';
+                }
+                return <Category
+                          key={ idx }
+                          partOfSpeech={ cat.title }
+                          pressed={ cat.pressed }
+                          index={ cat.id }
+                          fontColor={ fontColor }
+                          backColor={ backColor }
+                        ></Category>
+            })}
           </View>
           <View style={ styles.bookContainer} >
             <Text style={ styles.tradeHead } >My Book</Text>

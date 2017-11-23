@@ -27,6 +27,8 @@ import canteenReducers from './app/commissary/canteen/reducers';
 // create a redux store for our application
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 
+const NEW_GAME = 'http://localhost:3000/api/newGame';
+
 const reducers = combineReducers({
   gameList: activeGameReducers,
   sentence: sentenceReducers,
@@ -54,7 +56,7 @@ class HomeScreen extends Component {
 
           <TouchableOpacity
               style={ styles.button }
-              onPress={() => navigate('Game')}
+              onPress={() => navigate('Game', { id: 0 })}
             >
             <Text
               style={ styles.buttonText }>
