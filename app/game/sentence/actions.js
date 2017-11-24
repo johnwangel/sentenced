@@ -4,9 +4,7 @@ import { connect } from 'react-redux'
 export const INIT_SENTENCE = 'INIT_SENTENCE'
 export const UPDATE_SENTENCE = 'UPDATE_SENTENCE'
 
-const RANDOM = 'http://localhost:3000/api/random';
-
-export function addSentence( sentence ){
+export function initializeSentence( sentence ){
   return { type: INIT_SENTENCE, sentence }
 }
 

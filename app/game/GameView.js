@@ -27,7 +27,7 @@ import Stamp from './stamps/Stamp';
 import Styles from '../css/styles.js'
 
 import {
-          addSentence,
+          initializeSentence,
           updateSentence,
         } from './sentence/actions'
 
@@ -38,55 +38,75 @@ import {  addTiles,
         } from './tiles/actions'
 
 
+import Constants from "../constants"
 import Noun from "./helpers/Nouns"
 import CheckStamp from "./helpers/CheckStamp"
 import CheckZones from "./helpers/CheckZones"
 import Parser from "./helpers/Parser"
-
-const NEW_GAME = 'http://localhost:3000/api/newGame';
-const RANDOM = 'http://localhost:3000/api/random';
-const SENTENCE = 'http://localhost:3000/api/sentence';
-const STORE = 'http://localhost:3000/api/store';
 
 class GameView extends Component {
   constructor(props) {
     super(props);
 
     this.game_id = props.nav.state.params.id;
+
     if ( this.game_id === 0) {
-        fetch(NEW_GAME)
+        fetch(Constants.new_game)
         .then(res => res.json())
         .then(game => {
           this.game_id = game.id;
           AsyncStorage.setItem('sentencedCurrentGameID', this.game_id.toString())
           .then( res => {
-
               for (var i = 0; i < 3; i++) {
-                fetch(RANDOM)
+                fetch(Constants.random)
                 .then(res => res.json())
                 .then(tile => {
                   this.initializeTiles(tile);
                 });
               }
 
-              fetch(SENTENCE)
+              fetch(Constants.sentence)
               .then(res => res.json())
               .then(new_sentence => {
                 this.props.initSentence(new_sentence);
               });
 
-              fetch(STORE)
+              fetch(Constants.canteen)
               .then(res => res.json())
-              .then(store => {
-                this.props.initStore(store);
+              .then( items => {
+                this.props.initCanteen(items);
               });
-
-
           })
         })
+    } else {
+
+      let payload = { game_id: this.game_id };
+      fetch(Constants.active_game)
+        let gameState;
+        fetch(constants.active_game, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: "POST",
+          body: JSON.stringify(payload)
+        })
+        .then( response => {
+          return response.json();
+        })
+        .then( response => {
+          gameState = response;
+          let sentence = gameState.sentence;
+          this.props.initSentence( sentence );
+          let tiles = gameState.tiles;
+          tiles.forEach( tile => {
+            this.initializeTiles(tile);
+          })
+
+
+          console.log("STAMPS ", gameState.stamps )
+        })
     }
-
-
 
     this.state = {
       sentenceContainerLayout: [],
@@ -296,7 +316,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     initSentence: ( sentence ) => {
-      dispatch( addSentence( sentence ) );
+      dispatch( initializeSentence( sentence ) );
     },
     updateSentence: ( changeIDs ) => {
       dispatch( updateSentence( changeIDs ) );
@@ -313,8 +333,8 @@ const mapDispatchToProps = (dispatch) => {
     swapTiles: (tiles) => {
       dispatch( swapTile(tiles) );
     },
-    initStore: ( store ) => {
-      dispatch( addStore( store ) );
+    initCanteen: ( items ) => {
+      dispatch( initCanteen( items ) );
     },
   }
 }

@@ -2,6 +2,8 @@ import {
   UPDATE_STAMP_PRESSES,
 } from './actions';
 
+import SaveState from '../helpers/save'
+
 const stampReducers = (state = { stamps, }, action) => {
   switch (action.type) {
     case UPDATE_STAMP_PRESSES:
@@ -20,9 +22,9 @@ function update_stamp_presses(state, action){
     }
   })
 
-  return {
-    stamps : [ ...new_stamps ],
-  }
+  let stamps = [ ...new_stamps ];
+  SaveState.save_game_state( 'stamps', stamps );
+  return { stamps }
 }
 
 export default stampReducers;

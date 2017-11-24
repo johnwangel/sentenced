@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 export const INIT_CANTEEN = 'INIT_CANTEEN'
 export const UPDATE_CANTEEN_PRESSES = 'UPDATE_CANTEEN_PRESSES'
 
-export function addCanteen( items ){
+export function initCanteen( items ){
   return { type: INIT_CANTEEN, items }
 }
 

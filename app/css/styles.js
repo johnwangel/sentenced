@@ -142,4 +142,38 @@ export default styles = {
     backgroundColor: 'transparent',
     padding: 3,
   },
+  homeSubtitle: {
+    marginTop: 20,
+    marginBottom: 10,
+    textAlign: 'center',
+    fontSize: 28,
+    color: '#F75F48',
+    fontWeight: '900',
+  },
+  gamesScroller: {
+    width: screenWidth,
+    height: screenHeight/2,
+  },
+  gameButton: {
+    flex: 0,
+    flexDirection: 'column',
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 1,
+    borderColor: 'black',
+    borderWidth: 1,
+    padding: 10,
+    backgroundColor: 'white',
+  },
+  gameName: {
+    fontSize: 14,
+    textAlign: 'left',
+    color: 'blue',
+    fontWeight: 'bold',
+  },
+  gameUpdated: {
+    fontSize: 12,
+    textAlign: 'left',
+    color: 'blue',
+  },
 }

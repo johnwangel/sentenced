@@ -3,6 +3,8 @@ import {
   UPDATE_CANTEEN_PRESSES,
 } from './actions';
 
+import SaveState from '../../game/helpers/save'
+
 const storeReducers = (state = { canteen }, action) => {
   switch (action.type) {
     case INIT_CANTEEN:
@@ -25,9 +27,9 @@ function update_canteen_presses(state, action){
     }
   })
 
-  return {
-    canteen: [ ...new_canteen ],
-  }
+  let canteen = [ ...new_canteen ];
+  // SaveState.save_game_state( 'canteen', canteen );
+  return { canteen }
 }
 
 export default storeReducers;

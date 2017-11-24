@@ -11,6 +11,8 @@ import {
 
 import { connect } from 'react-redux'
 
+import Styles from '../css/styles.js'
+
 class ActiveGames extends Component {
   constructor(props) {
     super(props);
@@ -29,26 +31,24 @@ class ActiveGames extends Component {
     ]).isRequired,
   }
 
-  _onPressButton() {
-    // this.props.updatePresses({ id: this.props.stampProps.id })
-    // this.forceUpdate();
-  }
-
   render() {
+    const navigate = this.props.nav.navigate;
+
       return (
-            <TouchableOpacity>
-                    <Text
-                      onPress={ this._onPressButton.bind(this) }>
-                      { this.props.gameList }
-                    </Text>
+            <TouchableOpacity
+              style = { Styles.gameButton }
+              onPress={ () => navigate('Game', { id: this.props.game.game_id })}
+            >
+              <Text style={ Styles.gameName }>
+                { this.props.game.sentence }
+              </Text>
+              <Text style={ Styles.gameUpdated }>
+                { this.props.game.time }
+              </Text>
             </TouchableOpacity>
       );
   }
 }
-
-const styles = StyleSheet.create({
-
-});
 
 const mapStateToProps = (state) => {
   return { ...state };

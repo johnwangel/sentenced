@@ -1,8 +1,4 @@
 import {
-  AsyncStorage,
-} from 'react-native';
-
-import {
   ADD_TILE,
   REPLACE_TILE,
   SWAP_TILE,
@@ -10,7 +6,7 @@ import {
   UPDATE_TILE,
 } from './actions';
 
-import Constants from '../../constants'
+import SaveState from '../helpers/save'
 
 let tiles = [];
 
@@ -36,31 +32,9 @@ function loadTile(state, action){
   action.tile.tile.idx = idx;
   action.tile.tile.show = true;
 
-  AsyncStorage.getItem('sentencedCurrentGameID')
-  .then(response => {
-      let payload = {};
-      payload.game_id = response;
-      payload.tiles = [ ...state.tiles, action.tile.tile ]
-
-      fetch(constants.save_game, {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        method: "POST",
-        body: JSON.stringify(payload)
-      })
-      .then( response => {
-        return response.json();
-      })
-      .then( data => {
-        console.log('Created data', data)
-      });
-  })
-
-  return {
-    tiles : [ ...state.tiles, action.tile.tile ],
-  }
+  let tiles = [ ...state.tiles, action.tile.tile ];
+  SaveState.save_game_state( 'tiles', tiles );
+  return { tiles }
 }
 
 function replaceTile(state, action){
@@ -92,9 +66,9 @@ function swapTile(state, action){
   action.tiles.new_word.show = true;
   newTiles.push(action.tiles.new_word);
 
-  return {
-    tiles : [ ...newTiles ],
-  }
+  let tiles = [ ...newTiles ];
+  SaveState.save_game_state( 'tiles', tiles );
+  return { tiles }
 }
 
 function tilePressed(state, action){
@@ -109,15 +83,15 @@ function tilePressed(state, action){
     }
   })
 
-  return {
-    tiles : [ ...newTiles ],
-  }
+  let tiles = [ ...newTiles ];
+  SaveState.save_game_state( 'tiles', tiles );
+  return { tiles }
 }
 
 function updateTile(state, action){
-  return {
-    tiles : [ ...state.tiles ],
-  }
+  let tiles = [ ...state.tiles ];
+  SaveState.save_game_state( 'tiles', tiles );
+  return { tiles }
 }
 
 export default tileReducers;

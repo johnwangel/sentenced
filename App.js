@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   Button,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -12,6 +13,8 @@ import { StackNavigator } from 'react-navigation';
 import GameView from './app/game/GameView';
 import Canteen from './app/commissary/Commissary';
 import ActiveGames from './app/home/ActiveGames';
+import Constants from './app/constants'
+import Styles from './app/css/styles.js'
 
 // react - redux binding
 import { Provider } from 'react-redux';
@@ -27,8 +30,6 @@ import canteenReducers from './app/commissary/canteen/reducers';
 // create a redux store for our application
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 
-const NEW_GAME = 'http://localhost:3000/api/newGame';
-
 const reducers = combineReducers({
   gameList: activeGameReducers,
   sentence: sentenceReducers,
@@ -43,12 +44,43 @@ const store = createStore(reducers);
 class HomeScreen extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      activeGames: [],
+    }
   }
   static navigationOptions = {
     title: 'Home',
   };
+
+  componentWillMount() {
+    let user_id = 1;
+    let payload = { user_id };
+    let gameList;
+    fetch(constants.get_games, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify(payload)
+    })
+    .then( response => {
+      return response.json();
+    })
+    .then( response => {
+      gameList = response;
+      this.setState( { activeGames: gameList.games } )
+    })
+  }
+
   render() {
     const { navigate } = this.props.navigation;
+
+    console.log(this.props)
+
+    let games = this.state.activeGames;
+
     return (
       <Provider store={store}>
         <View style={ styles.main }>
@@ -63,8 +95,16 @@ class HomeScreen extends Component {
                 New Game
             </Text>
           </TouchableOpacity>
-          <Text style= {styles.subtitle}>GAMES</Text>
-          <ActiveGames></ActiveGames>
+          <Text style= {Styles.homeSubtitle} >My Games</Text>
+          <ScrollView style={ Styles.gamesScroller }>
+            { games.map( game => {
+              return <ActiveGames
+                    game={ game }
+                    nav={ this.props.navigation }
+                ></ActiveGames>
+            })}
+          </ScrollView>
+
         </View>
       </Provider>
     );
@@ -117,17 +157,10 @@ const styles = StyleSheet.create({
     color: '#F75F48',
     fontWeight: '900',
   },
-  subtitle: {
-    marginTop: 100,
-    textAlign: 'center',
-    fontSize: 32,
-    color: '#F75F48',
-    fontWeight: '900',
-  },
   button: {
     marginTop: 50,
     width: '100%',
-    height: '10%',
+    height: 50,
     backgroundColor: 'white',
   },
   buttonText: {

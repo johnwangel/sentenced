@@ -3,6 +3,8 @@ import {
   UPDATE_SENTENCE,
 } from './actions';
 
+import SaveState from '../helpers/save'
+
 let sentence = [];
 
 const sentenceReducers = (state = { sentence }, action) => {
@@ -17,14 +19,15 @@ const sentenceReducers = (state = { sentence }, action) => {
 }
 
 function initSentence(state, action){
-  let new_sentence = action.sentence.sentence;
+  let new_sentence = action.sentence.sentence || action.sentence;
+  console.log("ACTION FROM INIT SENT", new_sentence)
   let word = new_sentence[0].word;
   let new_word = word.charAt(0).toUpperCase() + word.slice(1);
   new_sentence[0].word = new_word;
 
-  return {
-    sentence: [ ...new_sentence ],
-  }
+  let sentence = [ ...new_sentence ];
+  SaveState.save_game_state( 'sentence', sentence );
+  return { sentence }
 }
 
 function updateSent(state, action){
@@ -35,9 +38,9 @@ function updateSent(state, action){
       newSent[action.wordIDs.original_word.id].updated = true;
   }
 
-  return {
-    sentence: [ ...newSent ],
-  }
+  let sentence = [ ...newSent ];
+  SaveState.save_game_state( 'sentence', sentence );
+  return { sentence }
 }
 
 export default sentenceReducers;

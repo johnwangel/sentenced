@@ -2,6 +2,8 @@ import {
   UPDATE_CATEGORY_PRESSES,
 } from './actions';
 
+import SaveState from '../../game/helpers/save'
+
 const categoryReducers = (state = { categories }, action) => {
   switch (action.type) {
     case UPDATE_CATEGORY_PRESSES:
@@ -22,9 +24,9 @@ function update_category_presses(state, action){
     }
   })
 
-  return {
-    categories: [ ...new_cat ],
-  }
+  let categories = [ ...new_cat ];
+  SaveState.save_game_state( 'categories', categories );
+  return { categories }
 }
 
 export default categoryReducers;
