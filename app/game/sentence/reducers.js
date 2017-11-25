@@ -20,7 +20,6 @@ const sentenceReducers = (state = { sentence }, action) => {
 
 function initSentence(state, action){
   let new_sentence = action.sentence.sentence || action.sentence;
-  console.log("ACTION FROM INIT SENT", new_sentence)
   let word = new_sentence[0].word;
   let new_word = word.charAt(0).toUpperCase() + word.slice(1);
   new_sentence[0].word = new_word;

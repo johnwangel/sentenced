@@ -31,7 +31,7 @@ import {
           updateSentence,
         } from './sentence/actions'
 
-import {  addTiles,
+import {  initTiles,
           replaceTile,
           swapTile,
           updateTile,
@@ -57,13 +57,23 @@ class GameView extends Component {
           this.game_id = game.id;
           AsyncStorage.setItem('sentencedCurrentGameID', this.game_id.toString())
           .then( res => {
-              for (var i = 0; i < 3; i++) {
-                fetch(Constants.random)
-                .then(res => res.json())
-                .then(tile => {
-                  this.initializeTiles(tile);
-                });
-              }
+
+              var p1 = new Promise((resolve, reject) => {
+                setTimeout(resolve, 1000, fetch(Constants.random).then( res => res.json() ));
+              });
+              var p2 = new Promise((resolve, reject) => {
+                setTimeout(resolve, 1000, fetch(Constants.random).then( res => res.json() ));
+              });
+              var p3 = new Promise((resolve, reject) => {
+                setTimeout(resolve, 1000, fetch(Constants.random).then( res => res.json() ));
+              });
+
+              Promise.all([p1, p2, p3])
+              .then(tiles => {
+                this.props.initTiles(tiles)
+              }, reason => {
+                console.log("FAILURE", reason)
+              });
 
               fetch(Constants.sentence)
               .then(res => res.json())
@@ -79,33 +89,30 @@ class GameView extends Component {
           })
         })
     } else {
-
-      let payload = { game_id: this.game_id };
-      fetch(Constants.active_game)
-        let gameState;
-        fetch(constants.active_game, {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          method: "POST",
-          body: JSON.stringify(payload)
-        })
-        .then( response => {
-          return response.json();
-        })
-        .then( response => {
-          gameState = response;
-          let sentence = gameState.sentence;
-          this.props.initSentence( sentence );
-          let tiles = gameState.tiles;
-          tiles.forEach( tile => {
-            this.initializeTiles(tile);
+      AsyncStorage.setItem('sentencedCurrentGameID', this.game_id.toString())
+      .then( res => {
+        let payload = { game_id: this.game_id };
+        fetch(Constants.active_game)
+          let gameState;
+          fetch(constants.active_game, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            method: "POST",
+            body: JSON.stringify(payload)
           })
-
-
-          console.log("STAMPS ", gameState.stamps )
-        })
+          .then( response => {
+            return response.json();
+          })
+          .then( response => {
+            gameState = response;
+            let sentence = gameState.sentence;
+            this.props.initSentence( sentence );
+            this.props.initTiles(gameState.tiles)
+            console.log("STAMPS ", gameState.stamps )
+          })
+      })
     }
 
     this.state = {
@@ -139,9 +146,9 @@ class GameView extends Component {
     Alert.alert('You tapped the Commissary!')
   }
 
-  initializeTiles = (tile) => {
-    this.props.initTiles( { tile } )
-  }
+  // initializeTiles = (tile) => {
+  //   this.props.initTiles( { tile } )
+  // }
 
   setDropZoneValues = (event) =>{
     this.setState( { sentenceContainerLayout: event.nativeEvent.layout } );
@@ -181,7 +188,7 @@ class GameView extends Component {
   }
 
   swap = ( orig_word ) => {
-    fetch(RANDOM)
+    fetch(Constants.random)
     .then((response) => response.json())
     .then((new_word) => {
       this.props.swapTiles( { orig_word, new_word } );
@@ -207,7 +214,7 @@ class GameView extends Component {
       Alert.alert('That word has already been updated! Please try again.')
       this.props.replaceTile( { replacement_word, new_word } );
     } else if (drop_successful) {
-      fetch(RANDOM)
+      fetch(Constants.random)
       .then((response) => response.json())
       .then((word) => {
         new_word = word;
@@ -321,8 +328,8 @@ const mapDispatchToProps = (dispatch) => {
     updateSentence: ( changeIDs ) => {
       dispatch( updateSentence( changeIDs ) );
     },
-    initTiles: ( tile ) => {
-      dispatch( addTiles( tile ) );
+    initTiles: ( tiles ) => {
+      dispatch( initTiles( tiles ) );
     },
     replaceTile: ( tiles ) => {
       dispatch( replaceTile( tiles ) );
