@@ -2,15 +2,19 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   Button,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
+  TouchableHighlight,
   TouchableOpacity,
   View,
 } from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
 import GameView from './app/game/GameView';
+import LoginModal from './app/login/login';
 import Canteen from './app/commissary/Commissary';
 import ActiveGames from './app/home/ActiveGames';
 import Constants from './app/constants'
@@ -77,19 +81,19 @@ class HomeScreen extends Component {
   render() {
     const { navigate } = this.props.navigation;
     let games = this.state.activeGames;
-    console.log("GAMES ", games)
 
     return (
       <Provider store={store}>
-        <View style={ styles.main }>
-          <Text style= {styles.title} >SENTENCED</Text>
+        <View style={ Styles.main }>
+          <LoginModal></LoginModal>
+          <Text style= {Styles.title} >SENTENCED</Text>
 
           <TouchableOpacity
-              style={ styles.button }
+              style={ Styles.button }
               onPress={() => navigate('Game', { id: 0 })}
             >
             <Text
-              style={ styles.buttonText }>
+              style={ Styles.buttonText }>
                 New Game
             </Text>
           </TouchableOpacity>
@@ -140,35 +144,6 @@ class Commissary extends React.Component {
     );
   }
 };
-
-const styles = StyleSheet.create({
-  main: {
-   marginRight: 0,
-   flex: 0,
-   flexDirection: 'column',
-   justifyContent: 'center',
-  },
-  title: {
-    marginTop: 100,
-    textAlign: 'center',
-    fontSize: 56,
-    color: '#F75F48',
-    fontWeight: '900',
-  },
-  button: {
-    marginTop: 50,
-    width: '100%',
-    height: 50,
-    backgroundColor: 'white',
-  },
-  buttonText: {
-    padding: 10,
-    textAlign: 'center',
-    fontSize: '24',
-    color: '#F75F48',
-    fontWeight: '600',
-  },
-});
 
 export default SentencedApp = StackNavigator({
   Home: { screen: HomeScreen },
