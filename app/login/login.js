@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Alert, Modal, Text, TextInput, TouchableHighlight, View } from 'react-native';
 
 import Styles from '../css/styles.js'
+import constants from '../constants'
 
 class LoginModal extends Component {
 
@@ -16,15 +17,41 @@ class LoginModal extends Component {
   }
 
   loginModalClick(visible) {
-    console.log("USERNAME ", this.state.username, " PW: ", this.state.password);
     this.setState({loginModalVisible: visible});
+
+    fetch(constants.login, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify({ username: this.state.username, password: this.state.password })
+    })
+    .then( user => {
+      console.log("USER ID", user)
+    })
   }
 
   regModalClick(visible) {
-    console.log("USERNAME ", this.state.username, " PW: ", this.state.password);
-    console.log("FIRST NAME ", this.state.first_name, " LAST: ", this.state.last_name);
-    console.log("EMAIL ", this.state.email_address);
     this.setState({regModalVisible: visible});
+    let payload = { username: this.state.username,
+                    password: this.state.password,
+                    first_name: this.state.first_name,
+                    last_name: this.state.last_name,
+                    email: this.state.email_address,
+                }
+
+    fetch(constants.register, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify(payload)
+    })
+    .then( user => {
+      console.log("USER ", user.body)
+    })
   }
 
   render() {
@@ -46,6 +73,7 @@ class LoginModal extends Component {
                 onChangeText={(username) => this.setState({username})}
                 placeholder={this.state.username}
                 autoCapitalize={ 'none' }
+                autoCorrect={false}
               />
               <TextInput
                 style={Styles.inputBox}
@@ -53,6 +81,7 @@ class LoginModal extends Component {
                 placeholder={this.state.password}
                 secureTextEntry={true}
                 autoCapitalize={ 'none' }
+                autoCorrect={false}
               />
               <TouchableHighlight
                 style={Styles.button}
@@ -89,6 +118,7 @@ class LoginModal extends Component {
                 onChangeText={(username) => this.setState({username})}
                 placeholder={this.state.username}
                 autoCapitalize={ 'none' }
+                autoCorrect={false}
               />
               <TextInput
                 style={Styles.inputBox}
@@ -96,22 +126,26 @@ class LoginModal extends Component {
                 placeholder={this.state.password}
                 secureTextEntry={true}
                 autoCapitalize={ 'none' }
+                autoCorrect={false}
               />
               <TextInput
                 style={Styles.inputBox}
                 onChangeText={(first_name) => this.setState({first_name})}
                 placeholder={this.state.first_name}
+                autoCorrect={false}
               />
               <TextInput
                 style={Styles.inputBox}
                 onChangeText={(last_name) => this.setState({last_name})}
                 placeholder={this.state.last_name}
+                autoCorrect={false}
               />
               <TextInput
                 style={Styles.inputBox}
                 onChangeText={(email_address) => this.setState({email_address})}
                 placeholder={this.state.email_address}
                 autoCapitalize={ 'none' }
+                autoCorrect={false}
               />
               <TouchableHighlight
                 style={Styles.button}

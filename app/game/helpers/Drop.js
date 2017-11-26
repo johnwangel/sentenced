@@ -1,7 +1,6 @@
 import Verb from './Verbs';
 import Noun from './Nouns';
 
-
 class Drop {
   constructor(original, replacement) {
     this.original = original;
