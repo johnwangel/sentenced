@@ -1,5 +1,5 @@
 import {
-  ADD_TILE,
+  INIT_TILES,
   REPLACE_TILE,
   SWAP_TILE,
   TILE_PRESSED,
@@ -12,8 +12,8 @@ let tiles = [];
 
 const tileReducers = (state = { tiles, }, action) => {
   switch (action.type) {
-    case ADD_TILE:
-      return loadTile(state, action)
+    case INIT_TILES:
+      return initTiles(state, action)
     case REPLACE_TILE:
       return replaceTile(state, action)
     case SWAP_TILE:
@@ -27,12 +27,19 @@ const tileReducers = (state = { tiles, }, action) => {
   }
 }
 
-function loadTile(state, action){
-  let idx = parseInt(Math.random()*10000);
-  action.tile.tile.idx = idx;
-  action.tile.tile.show = true;
+function initTiles(state, action){
 
-  let tiles = [ ...state.tiles, action.tile.tile ];
+  console.log("ACTION FROM INIT TILES", action)
+
+  let new_tiles = action.tiles;
+
+  new_tiles.forEach( tile => {
+    let idx = parseInt(Math.random()*10000);
+    tile.idx = idx;
+    tile.show = true;
+  })
+
+  let tiles = [ ...new_tiles ];
   SaveState.save_game_state( 'tiles', tiles );
   return { tiles }
 }
