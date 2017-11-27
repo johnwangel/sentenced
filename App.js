@@ -51,6 +51,7 @@ class HomeScreen extends Component {
 
     this.state = {
       activeGames: [],
+      loggedIn: true,
     }
   }
   static navigationOptions = {
@@ -58,23 +59,30 @@ class HomeScreen extends Component {
   };
 
   componentWillMount() {
-    let user_id = 1;
-    let payload = { user_id };
-    let gameList;
-    fetch(constants.get_games, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      method: "POST",
-      body: JSON.stringify(payload)
-    })
+    fetch(constants.auth)
     .then( response => {
-      return response.json();
-    })
-    .then( response => {
-      gameList = response;
-      this.setState( { activeGames: gameList.games } )
+      let loginID = JSON.parse(response._bodyText)
+      if (loginID.id) {
+        this.state.loggedIn = true;
+        let user_id = loginID.id;
+        let payload = { user_id };
+        let gameList;
+        fetch(constants.get_games, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            method: "POST",
+            body: JSON.stringify(payload)
+          })
+          .then( response => {
+            return response.json();
+          })
+          .then( response => {
+            gameList = response;
+            this.setState( { activeGames: gameList.games } )
+          })
+        }
     })
   }
 
@@ -85,7 +93,7 @@ class HomeScreen extends Component {
     return (
       <Provider store={store}>
         <View style={ Styles.main }>
-          <LoginModal></LoginModal>
+          { !this.state.loggedIn &&  <LoginModal></LoginModal> }
           <Text style= {Styles.title} >SENTENCED</Text>
 
           <TouchableOpacity
@@ -106,7 +114,6 @@ class HomeScreen extends Component {
                 ></ActiveGames>
             })}
           </ScrollView>
-
         </View>
       </Provider>
     );

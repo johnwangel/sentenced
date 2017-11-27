@@ -9,4 +9,5 @@ export default constants = {
   active_game: 'http://localhost:3000/api/active_game',
   register: 'http://localhost:3000/api/register',
   login: 'http://localhost:3000/api/login',
+  auth: 'http://localhost:3000/api/auth',
 }

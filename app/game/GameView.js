@@ -57,7 +57,6 @@ class GameView extends Component {
           this.game_id = game.id;
           AsyncStorage.setItem('sentencedCurrentGameID', this.game_id.toString())
           .then( res => {
-
               var p1 = new Promise((resolve, reject) => {
                 setTimeout(resolve, 1000, fetch(Constants.random).then( res => res.json() ));
               });

@@ -5,15 +5,18 @@ import Styles from '../css/styles.js'
 import constants from '../constants'
 
 class LoginModal extends Component {
-
-  state = {
-      loginModalVisible: true,
-      regModalVisible: false,
-      username: 'username',
-      password: 'password',
-      first_name: 'first name',
-      last_name: 'last name',
-      email_address: 'email address',
+  constructor(props) {
+    super(props);
+    console.log("PROPS", props)
+    this.state = {
+        loginModalVisible: !props.login,
+        regModalVisible: false,
+        username: 'username',
+        password: 'password',
+        first_name: 'first name',
+        last_name: 'last name',
+        email_address: 'email address',
+    }
   }
 
   loginModalClick(visible) {
@@ -28,7 +31,9 @@ class LoginModal extends Component {
       body: JSON.stringify({ username: this.state.username, password: this.state.password })
     })
     .then( user => {
-      console.log("USER ID", user)
+      let userInfo = JSON.parse(user._bodyText)
+      console.log("USER INFO", userInfo)
+      console.log("USER COOKIE", user.headers)
     })
   }
 
