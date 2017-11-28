@@ -37,6 +37,8 @@ import {  initTiles,
           updateTile,
         } from './tiles/actions'
 
+import {  initStamps } from './stamps/actions'
+
 
 import Constants from "../constants"
 import Noun from "./helpers/Nouns"
@@ -80,10 +82,10 @@ class GameView extends Component {
                 this.props.initSentence(new_sentence);
               });
 
-              fetch(Constants.canteen)
+              fetch(Constants.init_stamps)
               .then(res => res.json())
-              .then( items => {
-                this.props.initCanteen(items);
+              .then( stamps => {
+                this.props.initStamps(stamps);
               });
           })
         })
@@ -108,8 +110,8 @@ class GameView extends Component {
             gameState = response;
             let sentence = gameState.sentence;
             this.props.initSentence( sentence );
-            this.props.initTiles(gameState.tiles)
-            console.log("STAMPS ", gameState.stamps )
+            this.props.initTiles(gameState.tiles);
+            this.props.initStamps(gameState.stamps)
           })
       })
     }
@@ -144,10 +146,6 @@ class GameView extends Component {
   _onPressCommissary() {
     Alert.alert('You tapped the Commissary!')
   }
-
-  // initializeTiles = (tile) => {
-  //   this.props.initTiles( { tile } )
-  // }
 
   setDropZoneValues = (event) =>{
     this.setState( { sentenceContainerLayout: event.nativeEvent.layout } );
@@ -339,8 +337,8 @@ const mapDispatchToProps = (dispatch) => {
     swapTiles: (tiles) => {
       dispatch( swapTile(tiles) );
     },
-    initCanteen: ( items ) => {
-      dispatch( initCanteen( items ) );
+    initStamps: ( stamps ) => {
+      dispatch( initStamps( stamps ) );
     },
   }
 }

@@ -17,17 +17,29 @@ import {
 
 import { connect } from 'react-redux'
 
+import Constants from "../constants"
+
 import Book from './book/Book';
 import Category from './categories/Category';
 import Canteen from './canteen/Canteen';
+
+import { initCanteen } from './canteen/actions'
 
 class CommissaryClass extends Component {
 
   constructor(props) {
     super(props);
+
+    fetch(Constants.canteen)
+    .then(res => res.json())
+    .then( items => {
+      this.props.initCanteen(items);
+    });
   }
 
   render() {
+    // console.log("PROPS FROM COMMISSARY", this.props)
+
     let canteen = this.props.canteen.canteen;
     let category = this.props.categories.categories;
     let book = this.props.stamps.stamps
@@ -205,17 +217,17 @@ const mapStateToProps = (state) => {
   return { ...state };
 }
 
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     updatePresses: ( changeIDs ) => {
-//       dispatch( updateSentence( changeIDs ) );
-//     },
-//   }
-// }
+const mapDispatchToProps = (dispatch) => {
+  return {
+    initCanteen: ( items ) => {
+      dispatch( initCanteen( items ) );
+    }
+  }
+}
 
 CommissaryClass = connect(
-  mapStateToProps
-  // mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(CommissaryClass);
 
 export default CommissaryClass;

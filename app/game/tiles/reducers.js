@@ -28,9 +28,6 @@ const tileReducers = (state = { tiles, }, action) => {
 }
 
 function initTiles(state, action){
-
-  console.log("ACTION FROM INIT TILES", action)
-
   let new_tiles = action.tiles;
 
   new_tiles.forEach( tile => {

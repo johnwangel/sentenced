@@ -1,9 +1,10 @@
 export default constants = {
   new_game : 'http://localhost:3000/api/newGame',
   init_tiles: 'http://localhost:3000/api/init_tiles',
+  init_stamps: 'http://localhost:3000/api/init_stamps',
   random : 'http://localhost:3000/api/random',
   sentence : 'http://localhost:3000/api/sentence',
-  canteen : 'http://localhost:3000/api/store',
+  canteen : 'http://localhost:3000/api/canteen',
   save_game: 'http://localhost:3000/api/save_game',
   get_games: 'http://localhost:3000/api/get_games',
   active_game: 'http://localhost:3000/api/active_game',

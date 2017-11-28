@@ -162,7 +162,7 @@ class GameScreen extends React.Component {
 
   render() {
     return (
-      <Provider store={store}>
+      <Provider store={ store }>
         <View>
           <GameView nav={ this.props.navigation } />
         </View>
@@ -177,7 +177,7 @@ class Commissary extends React.Component {
   };
   render() {
     return (
-      <Provider store={store}>
+      <Provider store={ store }>
         <View>
           <Canteen/>
         </View>

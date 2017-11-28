@@ -1,16 +1,34 @@
 import {
+  INIT_STAMPS,
   UPDATE_STAMP_PRESSES,
 } from './actions';
 
 import SaveState from '../helpers/save'
 
+let stamps = [];
+
 const stampReducers = (state = { stamps, }, action) => {
   switch (action.type) {
+    case INIT_STAMPS:
+      return initStamps(state, action)
     case UPDATE_STAMP_PRESSES:
       return update_stamp_presses(state, action)
     default:
       return state;
   }
+}
+
+function initStamps(state, action){
+  let new_stamps = action.stamps;
+
+  new_stamps.forEach( stamp => {
+    let idx = parseInt(Math.random()*10000);
+    stamp.idx = idx;
+  })
+
+  let stamps = [ ...new_stamps ];
+  SaveState.save_game_state( 'stamps', stamps );
+  return { stamps }
 }
 
 function update_stamp_presses(state, action){
@@ -28,14 +46,3 @@ function update_stamp_presses(state, action){
 }
 
 export default stampReducers;
-
-let stamps = [
-    { title: 'Make Third Person Singular', "id": 1, },
-    { title: 'Make Plural', "id": 2, },
-    { title: 'Make Singular', "id": 3, },
-    { title: 'Make First Person', "id": 4, },
-    { title: 'Make Past Tense', "id": 5, },
-    { title: 'Make Future Tense', "id": 6, },
-    { title: 'Make Future Perfect Tense', "id": 7, },
-    { title: 'Make Past Perfect Tense', "id": 8, }
-  ]
