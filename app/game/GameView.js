@@ -109,7 +109,7 @@ class GameView extends Component {
           .then( response => {
             gameState = response;
             let sentence = gameState.sentence;
-            this.props.initSentence( sentence );
+            this.props.initSentence(gameState.sentence);
             this.props.initTiles(gameState.tiles);
             this.props.initStamps(gameState.stamps)
           })
@@ -234,6 +234,10 @@ class GameView extends Component {
 
 
   render() {
+
+    // console.log("SENTENCE FROM GAME", this.props.sentence)
+
+
     sentence = this.props.sentence.sentence;
     stamps = this.props.stamps.stamps;
     tiles = this.props.tiles.tiles;
