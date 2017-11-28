@@ -10,6 +10,10 @@ const screenWidth = Dimensions.get('window').width;
 const navBarHeight = Platform.OS === 'ios' ? 64 : 56;
 const space_above_sentence = screenHeight - (screenHeight * (5/8)) + navBarHeight;
 
+
+const prisonOrange = '#F75F48';
+const cautionYellow = '#F9D63D';
+
 export default styles = {
   screenHeight,
   screenWidth,
@@ -33,8 +37,20 @@ export default styles = {
     marginTop: 100,
     textAlign: 'center',
     fontSize: 56,
-    color: '#F75F48',
+    color: prisonOrange,
     fontWeight: '900',
+  },
+  welcome: {
+    fontSize: 32,
+    backgroundColor: cautionYellow,
+    height: screenHeight/20,
+    fontSize: 18,
+    padding: '2%',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    borderWidth: 1,
+    borderColor: 'black',
   },
   loginModal: {
     marginTop: '20%',

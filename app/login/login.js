@@ -7,7 +7,7 @@ import constants from '../constants'
 class LoginModal extends Component {
   constructor(props) {
     super(props);
-    console.log("PROPS", props)
+
     this.state = {
         loginModalVisible: !props.login,
         regModalVisible: false,
@@ -16,12 +16,20 @@ class LoginModal extends Component {
         first_name: 'first name',
         last_name: 'last name',
         email_address: 'email address',
+        login_message: 'Please login to get Sentenced!',
+        reg_message: 'Please complete all information so you can get Sentenced!',
     }
   }
 
-  loginModalClick(visible) {
+  loginModalHide(visible) {
     this.setState({loginModalVisible: visible});
+  }
 
+  regModalShow(visible) {
+    this.setState({regModalVisible: visible});
+  }
+
+  loginModalClick(visible) {
     fetch(constants.login, {
       headers: {
         'Accept': 'application/json',
@@ -32,13 +40,26 @@ class LoginModal extends Component {
     })
     .then( user => {
       let userInfo = JSON.parse(user._bodyText)
-      console.log("USER INFO", userInfo)
-      console.log("USER COOKIE", user.headers)
+      if (!userInfo.message){
+        this.setState({loginModalVisible: visible});
+        this.props.loginCB({ id: userInfo.id, username: userInfo.username });
+      } else {
+        this.setState({message: 'That username/password combo is invalid. Please try again.'})
+      }
     })
   }
 
   regModalClick(visible) {
-    this.setState({regModalVisible: visible});
+    if (this.state.username === 'username' ||
+        this.state.password === 'password' ||
+        this.state.first_name === 'first name' ||
+        this.state.last_name === 'last name' ||
+        this.state.email_address === "email address"){
+      this.setState({ reg_message: 'You left fields blank. Please correct and resubmit.'})
+      this.forceUpdate();
+      return;
+    }
+
     let payload = { username: this.state.username,
                     password: this.state.password,
                     first_name: this.state.first_name,
@@ -55,24 +76,24 @@ class LoginModal extends Component {
       body: JSON.stringify(payload)
     })
     .then( user => {
-      console.log("USER ", user.body)
+      let userInfo = JSON.parse(user._bodyText);
+      this.setState({regModalVisible: false});
+      this.loginModalClick(false);
     })
   }
 
   render() {
     return (
-
         <View>
           <Modal
             animationType="slide"
             transparent={false}
             visible={this.state.loginModalVisible}
-            onRequestClose={() => {alert("Modal has been closed.")}}
             >
            <View style={Styles.loginModal}>
             <View>
               <Text style= {Styles.title} >SENTENCED</Text>
-              <Text style= {Styles.plainText} >Please login to get Sentenced!</Text>
+              <Text style= {Styles.plainText} >{ this.state.message}</Text>
               <TextInput
                 style={Styles.inputBox}
                 onChangeText={(username) => this.setState({username})}
@@ -98,8 +119,8 @@ class LoginModal extends Component {
               <TouchableHighlight
                 style={Styles.button}
                 onPress={() => {
-                  this.loginModalClick(!this.state.loginModalVisible)
-                  this.regModalClick(!this.state.regModalVisible)
+                  this.loginModalHide(!this.state.loginModalVisible)
+                  this.regModalShow(!this.state.regModalVisible)
                 }}>
                   <Text style={Styles.buttonText} >Register</Text>
               </TouchableHighlight>
@@ -117,7 +138,7 @@ class LoginModal extends Component {
            <View style={Styles.loginModal}>
             <View>
               <Text style= {Styles.title} >SENTENCED</Text>
-              <Text style= {Styles.plainText} >Please complete all information so you can get Sentenced!</Text>
+              <Text style= {Styles.plainText} >{ this.state.reg_message }</Text>
               <TextInput
                 style={Styles.inputBox}
                 onChangeText={(username) => this.setState({username})}

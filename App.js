@@ -51,51 +51,75 @@ class HomeScreen extends Component {
 
     this.state = {
       activeGames: [],
-      loggedIn: true,
+      loggedIn: false,
+      username: '',
     }
   }
+
   static navigationOptions = {
     title: 'Home',
   };
 
+  _onPressLogout() {
+    fetch(constants.logout)
+    .then( response => {
+      this.setState({ loggedIn : false, username : '', activeGames : [] });
+      this.forceUpdate();
+    })
+  }
+
+  userLoggedIn(data){
+    this.setState({ loggedIn : true, username : data.username})
+    this.getGames(data.id)
+    this.forceUpdate();
+  }
+
   componentWillMount() {
     fetch(constants.auth)
     .then( response => {
-      let loginID = JSON.parse(response._bodyText)
-      if (loginID.id) {
-        this.state.loggedIn = true;
-        let user_id = loginID.id;
-        let payload = { user_id };
-        let gameList;
-        fetch(constants.get_games, {
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            method: "POST",
-            body: JSON.stringify(payload)
-          })
-          .then( response => {
-            return response.json();
-          })
-          .then( response => {
-            gameList = response;
-            this.setState( { activeGames: gameList.games } )
-          })
-        }
+      let login = JSON.parse(response._bodyText)
+      this.setState({ username: login.username })
+      if (login.id) {
+        this.setState({loggedIn: true});
+        let user_id = login.id;
+        this.getGames(user_id)
+      }
+    })
+    this.forceUpdate();
+  }
+
+  getGames(user_id){
+    let payload = { user_id };
+    let gameList;
+    fetch(constants.get_games, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify(payload)
+    })
+    .then( response => {
+      return response.json();
+    })
+    .then( response => {
+      gameList = response;
+      console.log("GAME LIST", gameList)
+      this.setState( { activeGames: gameList.games } )
     })
   }
 
   render() {
     const { navigate } = this.props.navigation;
     let games = this.state.activeGames;
+    console.log("LOGIN STATE ", this.state.loggedIn)
 
     return (
       <Provider store={store}>
         <View style={ Styles.main }>
-          { !this.state.loggedIn &&  <LoginModal></LoginModal> }
+          { !this.state.loggedIn &&  <LoginModal loginCB={this.userLoggedIn.bind(this)}></LoginModal> }
           <Text style= {Styles.title} >SENTENCED</Text>
-
+          <Text style= { Styles.welcome } >WELCOME TO THE BIG HOUSE { this.state.username.toUpperCase() }</Text>
           <TouchableOpacity
               style={ Styles.button }
               onPress={() => navigate('Game', { id: 0 })}
@@ -103,6 +127,16 @@ class HomeScreen extends Component {
             <Text
               style={ Styles.buttonText }>
                 New Game
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+              style={ Styles.button }
+              onPress={ this._onPressLogout.bind(this) }
+            >
+            <Text
+              style={ Styles.buttonText }>
+                Logout
             </Text>
           </TouchableOpacity>
           <Text style= {Styles.homeSubtitle} >My Games</Text>
