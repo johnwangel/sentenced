@@ -5,6 +5,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
+
 import Constants from "../constants"
 
 export default styles = {

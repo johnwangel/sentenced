@@ -19,8 +19,12 @@ const sentenceReducers = (state = { sentence }, action) => {
 }
 
 function initSentence(state, action){
-  let new_sentence = action.sentence.sentence || action.sentence;
-  new_sentence = new_sentence.coded.sentence.sentence;
+  let new_sentence;
+  if (action.sentence.sentence) {
+    new_sentence = action.sentence.sentence.coded.sentence.sentence;
+  } else {
+    new_sentence = action.sentence;
+  }
 
   let word = new_sentence[0].word;
   let new_word = word.charAt(0).toUpperCase() + word.slice(1);

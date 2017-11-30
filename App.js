@@ -104,7 +104,6 @@ class HomeScreen extends Component {
     })
     .then( response => {
       gameList = response;
-      console.log("GAME LIST", gameList)
       this.setState( { activeGames: gameList.games } )
     })
   }
@@ -112,7 +111,6 @@ class HomeScreen extends Component {
   render() {
     const { navigate } = this.props.navigation;
     let games = this.state.activeGames;
-    console.log("LOGIN STATE ", this.state.loggedIn)
 
     return (
       <Provider store={store}>
@@ -191,3 +189,6 @@ export default SentencedApp = StackNavigator({
   Game: { screen: GameScreen },
   Commissary: { screen: Commissary },
 });
+
+
+

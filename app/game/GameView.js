@@ -97,10 +97,7 @@ class GameView extends Component {
         fetch(Constants.active_game)
           let gameState;
           fetch(constants.active_game, {
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
+            headers: constants.headers,
             method: "POST",
             body: JSON.stringify(payload)
           })
