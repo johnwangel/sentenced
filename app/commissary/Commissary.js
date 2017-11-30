@@ -11,6 +11,7 @@ import {
   ScrollView,
   SectionList,
   StyleSheet,
+  TouchableOpacity,
   Text,
   View,
 } from 'react-native';
@@ -18,12 +19,14 @@ import {
 import { connect } from 'react-redux'
 
 import Constants from "../constants"
+import Styles from "./commissary_styles"
 
 import Book from './book/Book';
 import Category from './categories/Category';
 import Canteen from './canteen/Canteen';
 
 import { initCanteen } from './canteen/actions'
+import { tradeStamp } from '../game/stamps/actions'
 
 class CommissaryClass extends Component {
 
@@ -35,11 +38,51 @@ class CommissaryClass extends Component {
     .then( items => {
       this.props.initCanteen(items);
     });
+
+    this.state = {
+      tradePressed: false,
+    }
+  }
+
+  _pressTrade() {
+    this.setState({ tradePressed: !this.state.tradePressed })
+    let items = this.props.canteen.canteen;
+    let pressedItem = items.filter( item => item.pressed );
+    let item = pressedItem[0];
+    if ( !item ){
+      Alert.alert("You do not have an item selected for trade.")
+      return;
+    }
+    let cost = item.value;
+    let stmps = this.props.stamps.stamps
+    let tillCount = 0;
+    let selected_stamps = [];
+    stmps.forEach( val => {
+      if (val.pressed) {
+        selected_stamps.push(val)
+        tillCount++;
+      }
+    })
+
+    if ( tillCount === cost ){
+      let stamp_ids = selected_stamps.map( stamp => {
+        return { id: stamp.id, idx: stamp.idx };
+      })
+      fetch(Constants.get_stamp, {
+        headers: Constants.headers,
+        method: "POST",
+        body: JSON.stringify({ id: item.id })
+      })
+      .then( response => {
+        let new_stamp = JSON.parse(response._bodyText)
+        this.props.tradeStamp({ new_stamp, stamp_ids });
+      })
+    } else {
+      Alert.alert("You do not have enough stamps selected for trade!")
+    }
   }
 
   render() {
-    // console.log("PROPS FROM COMMISSARY", this.props)
-
     let canteen = this.props.canteen.canteen;
     let category = this.props.categories.categories;
     let book = this.props.stamps.stamps
@@ -53,29 +96,31 @@ class CommissaryClass extends Component {
       if (val.pressed) tillCount++;
     })
 
-    let scrollStyle = {
-       marginLeft: 2,
-       marginTop: 2,
-       height: 70,
-       flex: 0,
-       flexDirection: 'row',
-       justifyContent: 'flex-start',
-       padding: 5,
-       backgroundColor: 'blue',
+    if (this.state.tradePressed) {
+      Styles.tradeButton.borderColor = 'black';
+    } else {
+      Styles.tradeButton.borderColor = 'white';
     }
 
     return (
-
-        <View style={ styles.commissaryContainer }>
-          <Text style={ styles.tradeHead }>Store</Text>
+        <View style={ Styles.commissaryContainer }>
+          <Text style={ Styles.tradeHead }>Store</Text>
             { category.map( cat => {
                 if (cat.pressed){
                     let ttl = 'Trades for ' + cat.title + 's'
-                    return <View style={ styles.posView }>
-                              <Text style={ styles.posHead }>{ ttl }</Text>
+                    return <View style={ Styles.posView }>
+                              <View style={ Styles.tradeBar }>
+                                <Text style={ Styles.posHead }>{ ttl }</Text>
+                                <TouchableOpacity
+                                  style={ Styles.tradeButton }
+                                  onPress={ this._pressTrade.bind(this) }
+                                >
+                                  <Text style={ Styles.tradeButtonText }>Trade</Text>
+                                </TouchableOpacity>
+                              </View>
                               <ScrollView
                                     horizontal={ true }
-                                    style={ scrollStyle }
+                                    style={ Styles.scrollStyle }
                                   >
                                   { canteen.map( (item, idx) => {
                                     if ( cat.title === item.pos ) {
@@ -90,7 +135,7 @@ class CommissaryClass extends Component {
                 }
               })
           }
-          <View style={ styles.tradeContainerStyle } >
+          <View style={ Styles.tradeContainerStyle } >
             { category.map( (cat, idx) => {
                 let fontColor= 'blue';
                 let backColor= 'white';
@@ -108,110 +153,33 @@ class CommissaryClass extends Component {
                         ></Category>
             })}
           </View>
-          <View style={ styles.bookContainer} >
-            <Text style={ styles.tradeHead } >My Book</Text>
-            <View style={ styles.bookContainer} >
-              <Text style={ styles.stampsHead }>Till:</Text>
-              <Text style={ styles.stampsHead }> { tillCount } </Text>
+          <View style={ Styles.bookContainer} >
+            <Text style={ Styles.tradeHead } >My Book</Text>
+            <View style={ Styles.bookContainer} >
+              <Text style={ Styles.stampsHead }>Till:</Text>
+              <Text style={ Styles.stampsHead }> { tillCount } </Text>
             </View>
           </View>
-          <ScrollView style={ styles.stampContainerStyle } >
+          <ScrollView style={ Styles.stampContainerStyle } >
             { book.map( (stamp, idx) => {
-                let col = 'white';
-                if (stamp.pressed) col = 'gold';
-                return <Book
-                          key={ idx }
-                          stampProps={ stamp.title }
-                          id={ stamp.id }
-                          bc={ col }
-                          stampButtonStyles={ styles.stampButtonStyles }
-                          stampTextStyles={ styles.stampTextStyles }
-                        ></Book>
+                if (stamp.show){
+                  let col = 'white';
+                  if (stamp.pressed) col = 'gold';
+                  return <Book
+                            key={ idx }
+                            stampProps={ stamp.title }
+                            id={ stamp.id }
+                            bc={ col }
+                            stampButtonStyles={ Styles.stampButtonStyles }
+                            stampTextStyles={ Styles.stampTextStyles }
+                          ></Book>
+                }
             })}
           </ScrollView>
         </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  commissaryContainer: {
-    flex: 0,
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-  },
-  tradeHead: {
-    color: 'white',
-    paddingTop: 5,
-    paddingBottom: 5,
-    fontSize: Dimensions.get('window').height/40,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    backgroundColor: '#F75F48',
-  },
-  tradeContainerStyle: {
-    backgroundColor: 'white',
-    paddingVertical: 5,
-    flex: 0,
-    flexDirection: 'row',
-    justifyContent: 'left',
-    flexWrap: 'wrap',
-  },
-  posView: {
-    margin: 0,
-    padding: 0,
-    marginTop: 5,
-    backgroundColor: 'blue',
-  },
-  posHead: {
-    minWidth: '100%',
-    color: 'blue',
-    padding: 5,
-    fontSize: Dimensions.get('window').height/40,
-    textAlign: 'left',
-    backgroundColor: 'gold',
-  },
-  bookContainer: {
-    flex: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    backgroundColor: '#F75F48',
-  },
-  stampsHead: {
-    color: 'white',
-    paddingTop: 5,
-    paddingBottom: 5,
-    fontSize: Dimensions.get('window').height/40,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    backgroundColor: '#F75F48',
-  },
-  stampContainerStyle: {
-    backgroundColor: 'white',
-    paddingVertical: 20,
-    flex: 0,
-    flexDirection: 'column',
-    justifyContent: 'left',
-    flexWrap: 'wrap',
-    minWidth: '100%',
-  },
-  stampButtonStyles: {
-    width: '100%',
-    backgroundColor: 'white',
-    margin: 5,
-  },
-  stampTextStyles: {
-    padding: 5,
-    textAlign: 'center',
-    color: 'darkgreen',
-    fontWeight: 'bold',
-    fontSize: 14,
-    backgroundColor: 'transparent',
-    padding: 3,
-  },
-});
 
 const mapStateToProps = (state) => {
   return { ...state };
@@ -221,6 +189,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     initCanteen: ( items ) => {
       dispatch( initCanteen( items ) );
+    },
+    tradeStamp: ( payload ) => {
+      dispatch( tradeStamp( payload ) );
     }
   }
 }

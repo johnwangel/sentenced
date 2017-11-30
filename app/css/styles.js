@@ -9,8 +9,6 @@ const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
 const navBarHeight = Platform.OS === 'ios' ? 64 : 56;
 const space_above_sentence = screenHeight - (screenHeight * (5/8)) + navBarHeight;
-
-
 const prisonOrange = '#F75F48';
 const cautionYellow = '#F9D63D';
 
@@ -185,6 +183,7 @@ export default styles = {
   stampContainerStyle: {
     position: 'absolute',
     height: Dimensions.get('window').height/4,
+    minWidth: '100%',
     top: Dimensions.get('window').height -200,
     left: 0,
     backgroundColor: 'green',

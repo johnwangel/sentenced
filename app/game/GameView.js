@@ -60,7 +60,8 @@ class GameView extends Component {
           AsyncStorage.setItem('sentencedCurrentGameID', this.game_id.toString())
           .then( res => {
               var p1 = new Promise((resolve, reject) => {
-                setTimeout(resolve, 1000, fetch(Constants.random).then( res => res.json() ));
+                setTimeout(resolve, 1000, fetch(Constants.random)
+                .then( res => res.json() ));
               });
               var p2 = new Promise((resolve, reject) => {
                 setTimeout(resolve, 1000, fetch(Constants.random).then( res => res.json() ));
@@ -141,10 +142,6 @@ class GameView extends Component {
     this.props.tiles.tiles.forEach( tile => {
       if (tile.show && tile.pressed ) this.swap( tile )
     });
-  }
-
-  _onPressCommissary() {
-    Alert.alert('You tapped the Commissary!')
   }
 
   setDropZoneValues = (event) =>{
@@ -302,13 +299,15 @@ class GameView extends Component {
           </View>
           <ScrollView horizontal={ true } style={ Styles.stampContainerStyle }>
             { stamps.map( (stamp, idx) => {
-                return <Stamp
-                          key={ idx }
-                          stampProps={ stamp.title }
-                          stampButtonStyles={ Styles.stampButtonStyles }
-                          stampTextStyles={ Styles.stampTextStyles }
-                          stampCheck={ this.checkStamp }
-                        ></Stamp>
+                if (stamp.show) {
+                  return <Stamp
+                            key={ idx }
+                            stampProps={ stamp.title }
+                            stampButtonStyles={ Styles.stampButtonStyles }
+                            stampTextStyles={ Styles.stampTextStyles }
+                            stampCheck={ this.checkStamp }
+                          ></Stamp>
+                }
             })}
           </ScrollView>
         </Image>
