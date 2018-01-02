@@ -13,10 +13,7 @@ export default save = {
         payload[name] = state
 
         fetch(constants.save_game, {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
+          headers: Constants.headers,
           method: "POST",
           body: JSON.stringify(payload)
         })

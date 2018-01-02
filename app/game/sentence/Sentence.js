@@ -49,10 +49,6 @@ class AddSentence extends Component {
       ]).isRequired,
   }
 
-  // _onPressButton() {
-  //   Alert.alert('You tapped the button!')
-  // }
-
   _onLongPressButton() {
     let o = this.props.sentenceProps;
     let str = '';

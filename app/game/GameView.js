@@ -53,7 +53,10 @@ class GameView extends Component {
     this.game_id = props.nav.state.params.id;
 
     if ( this.game_id === 0) {
-        fetch(Constants.new_game)
+        fetch(Constants.new_game, {
+            headers: Constants.headers,
+            method: "GET",
+          })
         .then(res => res.json())
         .then(game => {
           this.game_id = game.id;
@@ -72,6 +75,7 @@ class GameView extends Component {
 
               Promise.all([p1, p2, p3])
               .then(tiles => {
+                console.log("TILES ", tiles)
                 this.props.initTiles(tiles)
               }, reason => {
                 console.log("FAILURE", reason)

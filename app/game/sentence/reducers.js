@@ -19,9 +19,11 @@ const sentenceReducers = (state = { sentence }, action) => {
 }
 
 function initSentence(state, action){
+  console.log("INIT SENTENCE", action.sentence)
+
   let new_sentence;
-  if (action.sentence.sentence) {
-    new_sentence = action.sentence.sentence.coded.sentence.sentence;
+  if (action.sentence.coded) {
+    new_sentence = action.sentence.coded.sentence.sentence;
   } else {
     new_sentence = action.sentence;
   }

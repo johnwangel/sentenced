@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
-import { Alert, Modal, Text, TextInput, TouchableHighlight, View } from 'react-native';
+import {
+  Alert,
+  AsyncStorage,
+  Modal,
+  Text,
+  TextInput,
+  TouchableHighlight,
+  View
+} from 'react-native';
 
 import Styles from '../css/styles.js'
 import constants from '../constants'
@@ -31,20 +39,23 @@ class LoginModal extends Component {
 
   loginModalClick(visible) {
     fetch(constants.login, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: constants.headers,
       method: "POST",
-      body: JSON.stringify({ username: this.state.username, password: this.state.password })
+      body: JSON.stringify({
+        username: this.state.username,
+        password: this.state.password
+      })
     })
     .then( user => {
       let userInfo = JSON.parse(user._bodyText)
       if (!userInfo.message){
-        this.setState({loginModalVisible: visible});
-        this.props.loginCB({ id: userInfo.id, username: userInfo.username });
+        AsyncStorage.setItem('login_token', userInfo.token)
+        .then( token => {
+          this.setState({ loginModalVisible: visible });
+          this.props.loginCB({ username: this.state.username });
+        })
       } else {
-        this.setState({message: 'That username/password combo is invalid. Please try again.'})
+        this.setState({message: userInfo.message })
       }
     })
   }
@@ -68,10 +79,7 @@ class LoginModal extends Component {
                 }
 
     fetch(constants.register, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: constants.headers,
       method: "POST",
       body: JSON.stringify(payload)
     })

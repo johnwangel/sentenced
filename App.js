@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
   AppRegistry,
+  AsyncStorage,
   Button,
   Modal,
   ScrollView,
@@ -75,27 +76,33 @@ class HomeScreen extends Component {
   }
 
   componentWillMount() {
-    fetch(constants.auth)
-    .then( response => {
-      let login = JSON.parse(response._bodyText)
-      this.setState({ username: login.username })
-      if (login.id) {
-        this.setState({loggedIn: true});
-        let user_id = login.id;
-        this.getGames(user_id)
-      }
+    AsyncStorage.getItem('login_token')
+    .then( token => {
+      let hd = Constants.headers;
+      hd.authorization = 'JWT ' + token;
+      fetch(constants.auth, {
+        headers: Constants.headers,
+        method: "GET",
+      })
+      .then( response => {
+        console.log("RESPONSE", response._bodyText);
+        let login = JSON.parse(response._bodyText)
+        this.setState({ username: login.username })
+        if (login.id) {
+          this.setState({loggedIn: true});
+          let user_id = login.id;
+          this.getGames(user_id)
+        }
+      })
+      this.forceUpdate();
     })
-    this.forceUpdate();
   }
 
   getGames(user_id){
     let payload = { user_id };
     let gameList;
     fetch(constants.get_games, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: Constants.headers,
       method: "POST",
       body: JSON.stringify(payload)
     })
